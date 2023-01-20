@@ -174,3 +174,9 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 을 허용할 도메인
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+
+GH_ID = env("GH_ID")
+GH_SECRET = env("GH_SECRET")
