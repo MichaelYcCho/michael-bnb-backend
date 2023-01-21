@@ -167,6 +167,7 @@ class GithubLogIn(APIView):
                     # sns_id = user_data.get("id"), # sns_id 필드로 고유값 저장할것
                 )
                 user.set_unusable_password()
+                # has_usable_password()가 False를 리턴하면 로그인 불가능하는 로직도 가능
                 user.save()
                 login(request, user)
                 return Response(status=status.HTTP_200_OK)
