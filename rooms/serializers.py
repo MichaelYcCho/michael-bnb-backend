@@ -11,6 +11,7 @@ class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
         fields = (
+            "pk",
             "name",
             "description",
         )
@@ -39,12 +40,13 @@ class RoomDetailSerializer(serializers.ModelSerializer):
         return room.rating()
 
     def get_is_owner(self, room):
-        request = self.context["request"]
-        return room.owner == request.user
+        request = self.context.get("request")
+        if request:
+            return room.owner == request.user
+        return False
 
     def get_is_liked(self, room) -> bool:
-        request = self.context["request"]
-
+        request = self.context.get("request")
         is_liked = False
 
         if request.user.is_authenticated:
