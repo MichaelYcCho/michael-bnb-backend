@@ -181,3 +181,8 @@ CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 GH_ID = env("GH_ID")
 GH_SECRET = env("GH_SECRET")
 KAKAO_ID = env("KAKAO_ID")
+
+# Cloud Flare
+# https://dash.cloudflare.com/
+CF_ID = env("CF_ID")
+CF_TOKEN = env("CF_TOKEN")
