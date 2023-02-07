@@ -95,7 +95,9 @@ class LogIn(APIView):
             login(request, user)
             return Response({"ok": "Welcome!"})
         else:
-            return Response({"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
 class LogOut(APIView):
@@ -174,6 +176,7 @@ class GithubLogIn(APIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class KakaoLogIn(APIView):
     def post(self, request):
         try:
@@ -215,5 +218,6 @@ class KakaoLogIn(APIView):
                 user.save()
                 login(request, user)
                 return Response(status=status.HTTP_200_OK)
-        except Exception:
+        except Exception as e:
+            # TODO 필드별 에러핸들링 필요(유니크 에러 등)
             return Response(status=status.HTTP_400_BAD_REQUEST)
