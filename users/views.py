@@ -53,9 +53,9 @@ class Users(APIView):
 
 
 class PublicUser(APIView):
-    def get(self, request, username):
+    def get(self, request, user_id: int):
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise NotFound
         serializer = serializers.PrivateUserSerializer(user)
@@ -82,21 +82,23 @@ class ChangePassword(APIView):
 
 class LogIn(APIView):
     def post(self, request):
-        username = request.data.get("username")
+        email = request.data.get("email")
         password = request.data.get("password")
-        if not username or not password:
-            raise ParseError
-        user = authenticate(
-            request,
-            username=username,
-            password=password,
-        )
+
+        user = User.objects.filter(email=email).first()
         if user:
-            login(request, user)
+            if not user.check_password(password):
+                return Response(
+                    {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            service = SignInService(input_data)
+            selector = UserSelector()
+            auth = AuthService()
             return Response({"ok": "Welcome!"})
         else:
             return Response(
-                {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
+                {"error": "user not found"}, status=status.HTTP_401_UNAUTHORIZED
             )
 
 

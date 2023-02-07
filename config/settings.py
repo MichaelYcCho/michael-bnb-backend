@@ -186,3 +186,8 @@ KAKAO_ID = env("KAKAO_ID")
 # https://dash.cloudflare.com/
 CF_ID = env("CF_ID")
 CF_TOKEN = env("CF_TOKEN")
+
+
+# JWT 정보
+JWT_SECRET_KEY = env("JWT_SECRET_KEY")
+JWT_ALGORITHM = env("JWT_ALGORITHM")
