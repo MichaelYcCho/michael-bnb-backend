@@ -4,12 +4,12 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.exceptions import ParseError, NotFound
 from rest_framework.permissions import IsAuthenticated
 
 from users.models import User
-from . import serializers
+from users.serializers import PrivateUserSerializer
 
 
 class Me(APIView):
@@ -18,38 +18,60 @@ class Me(APIView):
 
     def get(self, request):
         user = request.user
-        serializer = serializers.PrivateUserSerializer(user)
+        serializer = PrivateUserSerializer(user)
         return Response(serializer.data)
 
     def put(self, request):
         user = request.user
-        serializer = serializers.PrivateUserSerializer(
+        serializer = PrivateUserSerializer(
             user,
             data=request.data,
             partial=True,
         )
         if serializer.is_valid():
             user = serializer.save()
-            serializer = serializers.PrivateUserSerializer(user)
+            serializer = PrivateUserSerializer(user)
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
 
 
-class Users(APIView):
+class SignUp(APIView):
+    class InputSerializer(serializers.Serializer):
+        """
+        Input Serializer
+        """
+
+        username = serializers.CharField()
+        name = serializers.CharField()
+        password = serializers.CharField()
+        email = serializers.EmailField()
+
+        class Meta:
+            ref_name = "sign_up_input"
+
     def post(self, request):
         password = request.data.get("password")
+
         if not password:
             raise ParseError
-        serializer = serializers.PrivateUserSerializer(data=request.data)
+        serializer = self.InputSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            user = User.objects.create(
+                username=serializer.validated_data["username"],
+                name=serializer.validated_data["name"],
+                email=serializer.validated_data["email"],
+            )
             user.set_password(password)
             user.save()
-            serializer = serializers.PrivateUserSerializer(user)
+            serializer = PrivateUserSerializer(user)
             return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            print("에러", serializer.errors)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class PublicUser(APIView):
@@ -58,7 +80,7 @@ class PublicUser(APIView):
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             raise NotFound
-        serializer = serializers.PrivateUserSerializer(user)
+        serializer = PrivateUserSerializer(user)
         return Response(serializer.data)
 
 
@@ -95,7 +117,9 @@ class LogIn(APIView):
             login(request, user)
             return Response({"ok": "Welcome!"})
         else:
-            return Response({"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
 class LogOut(APIView):
@@ -173,6 +197,7 @@ class GithubLogIn(APIView):
                 return Response(status=status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class KakaoLogIn(APIView):
     def post(self, request):
