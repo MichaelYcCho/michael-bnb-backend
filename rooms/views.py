@@ -215,6 +215,26 @@ class RoomReviews(APIView):
             return Response(serializer.data)
 
 
+class RoomAmenities(APIView):
+    def get(self, request, pk):
+        selector = RoomSelector(pk)
+        room = selector.get_room()
+        try:
+            page = request.query_params.get("page", 1)
+            page = int(page)
+        except ValueError:
+            page = 1
+        page_size = settings.PAGE_SIZE
+        start = (page - 1) * page_size
+        end = start + page_size
+
+        serializer = serializers.AmenitySerializer(
+            room.amenities.all()[start:end],
+            many=True,
+        )
+        return Response(serializer.data)
+
+
 class RoomPhotos(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
