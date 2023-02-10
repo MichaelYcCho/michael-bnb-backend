@@ -1,6 +1,4 @@
-from django.utils import timezone
 from rest_framework import serializers
-from .models import Booking
 
 
 class CreateBookingInputSerializer(serializers.Serializer):
@@ -15,15 +13,3 @@ class CreateBookingOutputSerializer(serializers.Serializer):
     check_out = serializers.DateField()
     experience_time = serializers.DateTimeField()
     guests = serializers.IntegerField()
-
-
-class PublicBookingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Booking
-        fields = (
-            "pk",
-            "check_in",
-            "check_out",
-            "experience_time",
-            "guests",
-        )

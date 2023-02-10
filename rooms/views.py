@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.utils import timezone
+
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from django.db import transaction
@@ -15,14 +15,7 @@ from categories.models import Category
 from . import serializers
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
-from bookings.models import Booking
-from bookings.serializers import (
-    CreateBookingInputSerializer,
-    CreateBookingOutputSerializer,
-    PublicBookingSerializer,
-)
 from .selectors.selector_v0_room import RoomSelector
-from .services.service_v0_booking import BookingService
 
 
 class Amenities(APIView):
@@ -261,60 +254,3 @@ class RoomPhotos(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-
-
-class RoomBookingCheck(APIView):
-    def get(self, request, pk):
-        selector = RoomSelector(pk)
-        room = selector.get_room()
-        check_in = request.query_params.get("check_in")
-        check_out = request.query_params.get("check_out")
-
-        exists = Booking.objects.filter(
-            room=room,
-            check_in__lte=check_out,
-            check_out__gte=check_in,
-        ).exists()
-        if exists:
-            return Response({"ok": False})
-        return Response({"ok": True})
-
-
-class RoomBookings(APIView):
-
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get(self, request, pk):
-        selector = RoomSelector(pk)
-        room = selector.get_room()
-        now = timezone.localtime(timezone.now()).date()
-        bookings = Booking.objects.filter(
-            room=room,
-            kind=Booking.BookingKindChoices.ROOM,
-            check_in__gt=now,
-        )
-        serializer = PublicBookingSerializer(bookings, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, pk):
-        """
-        예약 생성 API
-        """
-        selector = RoomSelector(pk)
-        room = selector.get_room()
-
-        input_serializer = CreateBookingInputSerializer(
-            data={
-                "check_in": request.data.get("checkIn"),
-                "check_out": request.data.get("checkOut"),
-                "guests": request.data.get("guests"),
-            }
-        )
-        input_serializer.is_valid(raise_exception=True)
-
-        booking_service = BookingService(request.user, room, input_serializer.data)
-        booking_service.validate()
-        booking = booking_service.create_booking()
-
-        serializer = CreateBookingOutputSerializer(booking)
-        return Response(serializer.data)
