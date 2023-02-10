@@ -2,6 +2,7 @@ import jwt
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, serializers
@@ -10,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from users.models import User
 from users.serializers import PrivateUserSerializer
+from users.services.service_v0_user import UserService
 
 
 class Me(APIView):
@@ -113,3 +115,11 @@ class JWTLogIn(APIView):
             return Response({"token": token})
         else:
             return Response({"error": "wrong password"})
+
+
+class ChangeModeAPI(APIView):
+    def patch(self, request: Request):
+        service = UserService(request.user)
+        service.change_user_mode()
+
+        return Response(status=status.HTTP_200_OK)
