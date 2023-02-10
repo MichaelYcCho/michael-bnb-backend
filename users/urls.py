@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from . import views
 from users.views import SignUp
+from .views.view_v0_social_login import GithubLogIn, KakaoLogIn
 
 urlpatterns = [
     path("sign-up", SignUp.as_view()),
@@ -11,7 +12,7 @@ urlpatterns = [
     path("log-out", views.LogOut.as_view()),
     path("token-login", obtain_auth_token),
     path("jwt-login", views.JWTLogIn.as_view()),
-    path("github", views.GithubLogIn.as_view()),
-    path("kakao", views.KakaoLogIn.as_view()),
+    path("github", GithubLogIn.as_view()),
+    path("kakao", KakaoLogIn.as_view()),
     path("@<str:username>", views.PublicUser.as_view()),
 ]
