@@ -40,13 +40,7 @@ class RoomBookings(APIView):
         selector = RoomSelector(room_pk)
         room = selector.get_room()
 
-        input_serializer = CreateBookingInputSerializer(
-            data={
-                "check_in": request.data.get("checkIn"),
-                "check_out": request.data.get("checkOut"),
-                "guests": request.data.get("guests"),
-            }
-        )
+        input_serializer = CreateBookingInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
         booking_service = BookingService(request.user, room, input_serializer.data)

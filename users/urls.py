@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from . import views
 from users.views import SignUp
-from .views.view_v0_social_login import GithubLogIn, KakaoLogIn
+from users.views.view_v0_social_login import GithubLogIn, KakaoLogIn
 
 urlpatterns = [
     path("sign-up", SignUp.as_view()),
