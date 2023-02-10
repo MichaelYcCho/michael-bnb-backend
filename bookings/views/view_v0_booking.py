@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from rest_framework.response import Response
-from bookings.models import Booking
+from bookings.selectors.selector_v0_booking import BookingSelector
 from bookings.serializers import (
     CreateBookingInputSerializer,
     CreateBookingOutputSerializer,
@@ -14,19 +14,12 @@ from rooms.selectors.selector_v0_room import RoomSelector
 
 class RoomBookingCheck(APIView):
     def get(self, request: Request, room_pk: int) -> Response:
-        selector = RoomSelector(room_pk)
-        room = selector.get_room()
-        check_in = request.query_params.get("check_in")
-        check_out = request.query_params.get("check_out")
+        room_selector = RoomSelector(room_pk)
+        room = room_selector.get_room()
+        booking_selector = BookingSelector(room, request)
+        is_allow = booking_selector.is_exists()
 
-        exists = Booking.objects.filter(
-            room=room,
-            check_in__lte=check_out,
-            check_out__gte=check_in,
-        ).exists()
-        if exists:
-            return Response({"ok": False})
-        return Response({"ok": True})
+        return Response({"is_allow": is_allow})
 
 
 class RoomBookings(APIView):
