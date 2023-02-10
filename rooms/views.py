@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.utils import timezone
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from django.db import transaction
