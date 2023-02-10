@@ -19,7 +19,7 @@ class CreateBookingOutputSerializer(serializers.Serializer):
 
 class MyBookingOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    rooms = inline_serializer(
+    room = inline_serializer(
         fields={
             "name": serializers.CharField(
                 label="방 이름",
@@ -28,7 +28,6 @@ class MyBookingOutputSerializer(serializers.Serializer):
                 label="가격",
             ),
         },
-        source="rooms",  # type:ignore
     )
     kind = serializers.CharField()
     check_in = serializers.DateField()

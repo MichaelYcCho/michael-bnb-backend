@@ -8,7 +8,7 @@ from rooms.models import Room
 from users.models import User
 
 
-class BookingService:
+class BookingCreateService:
     # TODO : 커스텀 에러핸들러로 교체할것
 
     def __init__(self, user: User, room: Room, serializer_data: dict):
@@ -46,6 +46,7 @@ class BookingService:
             room=room,
             check_in__lte=self.check_out,
             check_out__gte=self.check_in,
+            is_canceled=False,
         ).exists():
             raise serializers.ValidationError(
                 "Those (or some) of those dates are already taken."
@@ -65,3 +66,13 @@ class BookingService:
         booking.save()
 
         return booking
+
+
+class BookingCancelService:
+    def __init__(self, user: User, booking: Booking) -> None:
+        self.user = user
+        self.booking = booking
+
+    def cancel_booking(self) -> None:
+        self.booking.is_canceled = True
+        self.booking.save()
