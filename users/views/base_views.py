@@ -36,44 +36,6 @@ class Me(APIView):
             return Response(serializer.errors)
 
 
-class SignUp(APIView):
-    class InputSerializer(serializers.Serializer):
-        """
-        Input Serializer
-        """
-
-        username = serializers.CharField()
-        name = serializers.CharField()
-        password = serializers.CharField()
-        email = serializers.EmailField()
-
-        class Meta:
-            ref_name = "sign_up_input"
-
-    def post(self, request):
-        password = request.data.get("password")
-
-        if not password:
-            raise ParseError
-        serializer = self.InputSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.create(
-                username=serializer.validated_data["username"],
-                name=serializer.validated_data["name"],
-                email=serializer.validated_data["email"],
-            )
-            user.set_password(password)
-            user.save()
-            serializer = PrivateUserSerializer(user)
-            return Response(serializer.data)
-        else:
-            print("에러", serializer.errors)
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-
 class PublicUser(APIView):
     def get(self, request, username):
         try:
