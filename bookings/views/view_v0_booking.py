@@ -4,16 +4,20 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from rest_framework.response import Response
+
+from bookings.models import Booking
 from bookings.selectors.selector_v0_booking import BookingSelector
 from bookings.serializers import (
     CreateBookingInputSerializer,
     CreateBookingOutputSerializer,
     MyBookingOutputSerializer,
+    ManageBookingsOutPutSerializer,
 )
 from bookings.services.service_v0_booking import (
     BookingCreateService,
     BookingCancelService,
 )
+from rooms.models import Room
 from rooms.selectors.selector_v0_room import RoomSelector
 
 
@@ -25,6 +29,18 @@ class GetMyBookingsAPI(APIView):
         selector = BookingSelector()
         bookings = selector.get_my_bookings_selector(request.user)
         serializer = MyBookingOutputSerializer(bookings, many=True)
+        return Response(serializer.data)
+
+
+class ManageBookingsAPI(APIView):
+    # TODO : Host Permission
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        rooms = Room.objects.filter(owner=request.user)
+        bookings = Booking.objects.filter(room__in=rooms)
+        serializer = ManageBookingsOutPutSerializer(bookings, many=True)
         return Response(serializer.data)
 
 

@@ -34,3 +34,33 @@ class MyBookingOutputSerializer(serializers.Serializer):
     check_out = serializers.DateField()
     guests = serializers.IntegerField()
     is_canceled = serializers.BooleanField()
+
+
+class ManageBookingsOutPutSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    user = inline_serializer(
+        fields={
+            "name": serializers.CharField(
+                label="이름",
+            ),
+            "phone": serializers.CharField(
+                label="전화번호",
+            ),
+        },
+    )
+
+    room = inline_serializer(
+        fields={
+            "name": serializers.CharField(
+                label="방 이름",
+            ),
+            "price": serializers.IntegerField(
+                label="가격",
+            ),
+        },
+    )
+    kind = serializers.CharField()
+    check_in = serializers.DateField()
+    check_out = serializers.DateField()
+    guests = serializers.IntegerField()
+    is_canceled = serializers.BooleanField()
