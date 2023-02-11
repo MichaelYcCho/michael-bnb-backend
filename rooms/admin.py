@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Room, Amenity
+from .selectors.selector_v0_room import RoomSelector
 
 
 @admin.action(description="Set all prices to zero")
@@ -18,8 +19,8 @@ class RoomAdmin(admin.ModelAdmin):
         "name",
         "price",
         "kind",
-        "total_amenities",
-        "rating",
+        "get_total_amenities",
+        "get_rating",
         "owner",
         "created_at",
     )
@@ -38,6 +39,13 @@ class RoomAdmin(admin.ModelAdmin):
         "^price",
         "=owner__username",
     )
+
+    def get_total_amenities(self, room: Room):
+        return room.amenities.count()
+
+    def get_rating(self, room: Room):
+        selector = RoomSelector()
+        return selector.get_room_avg_rating(room.pk)
 
 
 @admin.register(Amenity)

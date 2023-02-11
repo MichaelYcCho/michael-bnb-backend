@@ -59,9 +59,9 @@ class CancelBookingAPI(APIView):
 
 
 class CheckBookingAPI(APIView):
-    def get(self, request: Request, room_pk: int) -> Response:
-        room_selector = RoomSelector(room_pk)
-        room = room_selector.get_room()
+    def get(self, request: Request, room_id: int) -> Response:
+        room_selector = RoomSelector()
+        room = room_selector.get_room(room_id)
         booking_selector = BookingSelector()
         is_allow = booking_selector.is_exists(room, request)
 
@@ -72,12 +72,12 @@ class CreateBookingsAPI(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def post(self, request: Request, room_pk: int) -> Response:
+    def post(self, request: Request, room_id: int) -> Response:
         """
         예약 생성 API
         """
-        selector = RoomSelector(room_pk)
-        room = selector.get_room()
+        selector = RoomSelector()
+        room = selector.get_room(room_id)
 
         input_serializer = CreateBookingInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)

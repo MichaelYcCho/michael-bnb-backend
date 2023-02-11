@@ -1,10 +1,13 @@
 from rest_framework import serializers
+
+from utils.serializers import inline_serializer
 from .models import Amenity, Room
 from users.serializers import TinyUserSerializer
 from reviews.serializers import ReviewSerializer
 from categories.serializers import CategorySerializer
 from medias.serializers import PhotoSerializer
 from wishlists.models import Wishlist
+from .selectors.selector_v0_room import RoomSelector
 
 
 class AmenitySerializer(serializers.ModelSerializer):
@@ -37,7 +40,8 @@ class RoomDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_rating(self, room):
-        return room.rating()
+        selector = RoomSelector()
+        return selector.get_room_avg_rating(room.id)
 
     def get_is_owner(self, room):
         request = self.context.get("request")
@@ -84,3 +88,28 @@ class RoomListSerializer(serializers.ModelSerializer):
     def get_is_owner(self, room):
         request = self.context["request"]
         return room.owner == request.user
+
+
+class RoomListOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    owner = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "username": serializers.CharField(),
+        }
+    )
+    name = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    price = serializers.IntegerField()
+    rating = serializers.FloatField(source="_rating")
+    is_owner = serializers.BooleanField(source="_is_owner")
+    photos = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(required=False),
+            "file": serializers.URLField(required=False),
+            "description": serializers.CharField(required=False),
+        },
+    )
+    is_wish_listed = serializers.BooleanField(source="_is_wish_listed")

@@ -1,6 +1,7 @@
 from django.conf import settings
 
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.views import APIView
 from django.db import transaction
 from rest_framework.status import HTTP_204_NO_CONTENT
@@ -16,6 +17,7 @@ from . import serializers
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
 from .selectors.selector_v0_room import RoomSelector
+from .serializers import RoomListOutputSerializer
 
 
 class Amenities(APIView):
@@ -68,18 +70,21 @@ class AmenityDetail(APIView):
         return Response(status=HTTP_204_NO_CONTENT)
 
 
-class RoomsAPI(APIView):
+class RoomsListAPI(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self, request):
-        all_rooms = Room.objects.all()
-        serializer = serializers.RoomListSerializer(
-            all_rooms,
-            many=True,
-            context={"request": request},
-        )
+    def get(self, request: Request):
+
+        rooms = RoomSelector(request).get_all_rooms()
+        serializer = RoomListOutputSerializer(rooms, many=True)
+
         return Response(serializer.data)
+
+
+class RoomCreateAPI(APIView):
+
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = serializers.RoomDetailSerializer(data=request.data)
@@ -132,8 +137,8 @@ class RoomDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        selector = RoomSelector(pk)
-        room = selector.get_room()
+        selector = RoomSelector()
+        room = selector.get_room(pk)
 
         if not room.owner == request.user:
             raise PermissionDenied
@@ -215,8 +220,8 @@ class RoomReviews(APIView):
 
 class RoomAmenities(APIView):
     def get(self, request, pk):
-        selector = RoomSelector(pk)
-        room = selector.get_room()
+        selector = RoomSelector()
+        room = selector.get_room(pk)
         try:
             page = request.query_params.get("page", 1)
             page = int(page)
