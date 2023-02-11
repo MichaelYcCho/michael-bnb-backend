@@ -3,12 +3,14 @@ databases:
     databaseName: airbnb_db
     user: airbnb
     region: singapore
+    plan: free
 
 services:
   - type: web
     name: airbnb_be
     env: python
     region: singapore
+    plan: free
     buildCommand: "./build.sh"
     startCommand: "gunicorn config.wsgi:application"
     envVars:
