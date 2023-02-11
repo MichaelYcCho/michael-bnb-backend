@@ -68,6 +68,7 @@ class RoomListSerializer(serializers.ModelSerializer):
         model = Room
         fields = (
             "pk",
+            "owner",
             "name",
             "country",
             "city",

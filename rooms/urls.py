@@ -3,7 +3,7 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.RoomsAPI.as_view()),
+    path("list", views.RoomsAPI.as_view()),
     path("<int:pk>", views.RoomDetail.as_view()),
     path("<int:pk>/reviews", views.RoomReviews.as_view()),
     path("<int:pk>/amenities", views.RoomAmenities.as_view()),
