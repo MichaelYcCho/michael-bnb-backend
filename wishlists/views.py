@@ -87,10 +87,16 @@ class WishlistToggle(APIView):
         except Room.DoesNotExist:
             raise NotFound
 
-    def put(self, request, pk, room_pk):
-        wishlist = self.get_list(pk, request.user)
+    def put(self, request, room_pk):
+        wishlist = Wishlist.objects.filter(user=request.user).first()
+
+        if wishlist is None:
+            wishlist = Wishlist.objects.create(
+                user=request.user, name=f"{request.user.name} 님의 찜 목록"
+            )
+
         room = self.get_room(room_pk)
-        if wishlist.rooms.filter(pk=room.pk).exists():
+        if wishlist.rooms.filter(pk=room_pk).exists():
             wishlist.rooms.remove(room)
         else:
             wishlist.rooms.add(room)
