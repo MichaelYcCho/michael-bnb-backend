@@ -33,21 +33,22 @@ class RoomSelector:
 
     def is_wish_listed(self, room_id: int) -> bool:
         room = Room.objects.filter(pk=room_id).first()
+        wish_list = self.request.user.wishlists.all()
+
         if room is None:
             raise NotFound
-        return room in self.request.user.wishlists.all().values("rooms")
+
+        is_wish_listed = wish_list.filter(rooms__pk=room_id).exists()
+
+        return is_wish_listed
 
     def get_all_rooms(self) -> Room:
         rooms = Room.objects.all()
 
         for room in rooms:
-            print("흠", room.pk)
-            print("dk", room.id)
             room._rating = self.get_room_avg_rating(room.id)
             room._is_owner = self.is_owner(room.id)
             room._is_wish_listed = self.is_wish_listed(room.id)
-
-            print("포토", room.photos.all())
 
         return rooms
 
