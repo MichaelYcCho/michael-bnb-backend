@@ -1,8 +1,8 @@
 from django.db import models
-from common.models import CommonModel
+from model_utils.models import TimeStampedModel
 
 
-class Experience(CommonModel):
+class Experience(TimeStampedModel):
 
     """Experience Model Definiiton"""
 
@@ -45,8 +45,7 @@ class Experience(CommonModel):
         return self.name
 
 
-class Perk(CommonModel):
-
+class Perk(TimeStampedModel):
     """What is included on an Experience"""
 
     name = models.CharField(

@@ -10,7 +10,7 @@ class ExperienceAdmin(admin.ModelAdmin):
         "price",
         "start",
         "end",
-        "created_at",
+        "created",
     )
 
     list_filter = ("category",)

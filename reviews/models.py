@@ -1,8 +1,8 @@
 from django.db import models
-from common.models import CommonModel
+from model_utils.models import TimeStampedModel
 
 
-class Review(CommonModel):
+class Review(TimeStampedModel):
 
     """Review from a User to a Room or Experience"""
 

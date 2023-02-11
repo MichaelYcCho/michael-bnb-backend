@@ -1,8 +1,8 @@
 from django.db import models
-from common.models import CommonModel
+from model_utils.models import TimeStampedModel
 
 
-class Photo(CommonModel):
+class Photo(TimeStampedModel):
 
     file = models.URLField()
     description = models.CharField(
@@ -27,7 +27,7 @@ class Photo(CommonModel):
         return "Photo File"
 
 
-class Video(CommonModel):
+class Video(TimeStampedModel):
 
     file = models.URLField()
     experience = models.OneToOneField(

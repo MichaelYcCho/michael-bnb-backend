@@ -22,7 +22,7 @@ class RoomAdmin(admin.ModelAdmin):
         "get_total_amenities",
         "get_rating",
         "owner",
-        "created_at",
+        "created",
     )
 
     list_filter = (
@@ -31,8 +31,8 @@ class RoomAdmin(admin.ModelAdmin):
         "pet_friendly",
         "kind",
         "amenities",
-        "created_at",
-        "updated_at",
+        "created",
+        "modified",
     )
     search_fields = (
         "name",
@@ -54,10 +54,10 @@ class AmenityAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "description",
-        "created_at",
-        "updated_at",
+        "created",
+        "modified",
     )
     readonly_fields = (
-        "created_at",
-        "updated_at",
+        "created",
+        "modified",
     )

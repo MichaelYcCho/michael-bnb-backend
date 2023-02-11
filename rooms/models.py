@@ -1,8 +1,8 @@
 from django.db import models
-from common.models import CommonModel
+from model_utils.models import TimeStampedModel
 
 
-class Room(CommonModel):
+class Room(TimeStampedModel):
 
     """Room Model Definition"""
 
@@ -61,7 +61,7 @@ class Room(CommonModel):
         return self.amenities.count()
 
 
-class Amenity(CommonModel):
+class Amenity(TimeStampedModel):
 
     """Amenity Definiton"""
 
