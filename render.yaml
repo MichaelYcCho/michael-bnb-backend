@@ -1,12 +1,12 @@
 databases:
-  - name: airbnb_clone-db
+  - name: airbnb_db
     databaseName: airbnb_db
     user: airbnb
     region: singapore
 
 services:
   - type: web
-    name: airbnb_clone_be
+    name: airbnb_be
     env: python
     region: singapore
     buildCommand: "./build.sh"
@@ -14,7 +14,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: airbnb
+          name: airbnb_db
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
