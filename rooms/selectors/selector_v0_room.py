@@ -33,6 +33,9 @@ class RoomSelector:
 
     def is_wish_listed(self, room_id: int) -> bool:
         room = Room.objects.filter(pk=room_id).first()
+        if self.request.user.is_anonymous:
+            return False
+
         wish_list = self.request.user.wishlists.all()
 
         if room is None:
