@@ -68,7 +68,9 @@ class KakaoLogIn(APIView):
                     "client_id": settings.KAKAO_ID
                     if settings.APP_ENV == "prod"
                     else settings.KAKAO_ID_DEV,
-                    "redirect_uri": "http://127.0.0.1:3000/social/kakao",
+                    "redirect_uri": "https://www.michael-bnb.store/social/kakao"
+                    if settings.APP_ENV == "prod"
+                    else "http://127.0.0.1:3000/social/kakao",
                     "code": code,
                 },
             )
