@@ -15,6 +15,8 @@ import os
 
 import dj_database_url
 import environ
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 env = environ.Env()
 
@@ -37,7 +39,9 @@ DEBUG = "RENDER" not in os.environ
 
 APP_ENV = env("APP_ENV")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -173,7 +177,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Auth
-
 AUTH_USER_MODEL = "users.User"
 
 MEDIA_ROOT = "uploads"
@@ -190,6 +193,24 @@ REST_FRAMEWORK = {
         "config.authentication.JWTAuthentication",
     ]
 }
+
+
+# Sentry
+if APP_ENV == "PROD":
+    sentry_sdk.init(
+        dsn="https://3d5da01bf7f1436e8c946979ff2ea08a@o347460.ingest.sentry.io/4504666109575168",
+        integrations=[
+            DjangoIntegration(),
+        ],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0,
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True,
+    )
+
 
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
 
