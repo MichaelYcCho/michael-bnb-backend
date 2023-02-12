@@ -224,16 +224,10 @@ else:
 
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF 을 허용할 도메인
-
-GH_ID_DEV = env("GH_ID_DEV")
-GH_SECRET_DEV = env("GH_SECRET_DEV")
-
 GH_ID = env("GH_ID")
 GH_SECRET = env("GH_SECRET")
 
 KAKAO_ID = env("KAKAO_ID")
-KAKAO_ID_DEV = env("KAKAO_ID_DEV")
 
 # Cloud Flare
 # https://dash.cloudflare.com/
