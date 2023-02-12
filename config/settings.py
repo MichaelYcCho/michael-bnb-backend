@@ -39,7 +39,11 @@ DEBUG = "RENDER" not in os.environ
 
 APP_ENV = env("APP_ENV")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend.michael-bnb.store"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "backend.michael-bnb.store",
+]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -193,6 +197,23 @@ REST_FRAMEWORK = {
 }
 
 
+if APP_ENV == "PROD":
+    print("PRODUCTION CORS MODE")
+    CORS_ALLOWED_ORIGINS = [
+        "https://michael-bnb.store",
+        "https://www.michael-bnb.store",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://michael-bnb.store",
+        "https://www.michael-bnb.store",
+    ]
+
+else:
+    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+
+CORS_ALLOW_CREDENTIALS = True
+
 # Sentry
 if APP_ENV == "PROD":
     SESSION_COOKIE_DOMAIN = ".michael-bnb.store"
@@ -211,18 +232,7 @@ if APP_ENV == "PROD":
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
-print("APP_ENV", APP_ENV)
 
-if APP_ENV == "PROD":
-    CORS_ALLOWED_ORIGINS = ["https://michael-bnb.store"]
-    CSRF_TRUSTED_ORIGINS = ["https://michael-bnb.store"]
-
-else:
-    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
-
-
-CORS_ALLOW_CREDENTIALS = True
 
 GH_ID = env("GH_ID")
 GH_SECRET = env("GH_SECRET")
