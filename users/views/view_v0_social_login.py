@@ -13,7 +13,9 @@ class GithubLogIn(APIView):
         try:
             code = request.data.get("code")
             access_token = requests.post(
-                f"https://github.com/login/oauth/access_token?code={code}&client_id={settings.GH_ID}&client_secret={settings.GH_SECRET}",
+                f"https://github.com/login/oauth/access_token"
+                f"?code={code}&client_id={settings.GH_ID if settings.APP_ENV == 'PROD' else settings.GH_ID_DEV}"
+                f"&client_secret={settings.GH_SECRET if settings.APP_ENV == 'PROD' else settings.GH_SECRET_DEV}",
                 headers={"Accept": "application/json"},
             )
             access_token = access_token.json().get("access_token")
@@ -63,8 +65,12 @@ class KakaoLogIn(APIView):
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
                 data={
                     "grant_type": "authorization_code",
-                    "client_id": settings.KAKAO_ID,
-                    "redirect_uri": "http://127.0.0.1:3000/social/kakao",
+                    "client_id": settings.KAKAO_ID
+                    if settings.APP_ENV == "PROD"
+                    else settings.KAKAO_ID_DEV,
+                    "redirect_uri": "https://www.michael-bnb.store/social/kakao"
+                    if settings.APP_ENV == "PROD"
+                    else "http://127.0.0.1:3000/social/kakao",
                     "code": code,
                 },
             )
