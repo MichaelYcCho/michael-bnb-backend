@@ -39,9 +39,7 @@ DEBUG = "RENDER" not in os.environ
 
 APP_ENV = env("APP_ENV")
 
-ALLOWED_HOSTS = [
-    "localhost",
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend.michael-bnb.store"]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -197,6 +195,9 @@ REST_FRAMEWORK = {
 
 # Sentry
 if APP_ENV == "PROD":
+    SESSION_COOKIE_DOMAIN = ".michael-bnb.store"
+    CSRF_COOKIE_DOMAIN = ".michael-bnb.store"
+
     sentry_sdk.init(
         dsn="https://3d5da01bf7f1436e8c946979ff2ea08a@o347460.ingest.sentry.io/4504666109575168",
         integrations=[
@@ -210,18 +211,29 @@ if APP_ENV == "PROD":
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
+print("APP_ENV", APP_ENV)
 
+if APP_ENV == "PROD":
+    CORS_ALLOWED_ORIGINS = ["https://michael-bnb.store"]
+    CSRF_TRUSTED_ORIGINS = ["https://michael-bnb.store"]
 
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+else:
+    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+
 
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF 을 허용할 도메인
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+
+GH_ID_DEV = env("GH_ID_DEV")
+GH_SECRET_DEV = env("GH_SECRET_DEV")
 
 GH_ID = env("GH_ID")
 GH_SECRET = env("GH_SECRET")
+
 KAKAO_ID = env("KAKAO_ID")
+KAKAO_ID_DEV = env("KAKAO_ID_DEV")
 
 # Cloud Flare
 # https://dash.cloudflare.com/
