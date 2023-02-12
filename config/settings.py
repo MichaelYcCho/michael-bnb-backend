@@ -114,8 +114,17 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 if APP_ENV == "DEV":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_NAME"),
+            "USER": env("DB_USER"),
+            "HOST": env("DB_HOST"),
+            "PORT": 5432,
+        }
+    }
+elif APP_ENV == "TEST":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -198,7 +207,6 @@ REST_FRAMEWORK = {
 
 
 if APP_ENV == "PROD":
-    print("PRODUCTION CORS MODE")
     CORS_ALLOWED_ORIGINS = [
         "https://michael-bnb.store",
         "https://www.michael-bnb.store",
