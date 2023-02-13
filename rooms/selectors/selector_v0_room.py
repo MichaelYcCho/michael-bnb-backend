@@ -21,8 +21,8 @@ class RoomSelector:
         if count == 0:
             return total_rating
 
-        for reviews in room.reviews.all().values("rating"):
-            total_rating += reviews.rating["rating"]
+        for reviews in room.reviews.all():
+            total_rating += reviews.rating
         return round(total_rating / count, 2)
 
     def is_owner(self, room_id: int) -> bool:
