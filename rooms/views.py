@@ -1,4 +1,7 @@
 from django.conf import settings
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.request import Request
@@ -74,6 +77,15 @@ class RoomsListAPI(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room List API",
+        operation_description="현재 등록된 모든 방을 조회",
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                "조회 완료", RoomListOutputSerializer(many=True)
+            ),
+        },
+    )
     def get(self, request: Request):
 
         rooms = RoomSelector(request).get_all_rooms()
