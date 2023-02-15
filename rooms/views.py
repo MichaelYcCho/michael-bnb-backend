@@ -98,6 +98,13 @@ class RoomCreateAPI(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Create API",
+        operation_description="새로운 방을 생성",
+        responses={
+            status.HTTP_200_OK: openapi.Response("생성 완료"),
+        },
+    )
     def post(self, request):
         serializer = serializers.RoomDetailSerializer(data=request.data)
         if serializer.is_valid():
@@ -140,6 +147,13 @@ class RoomDetail(APIView):
         except Room.DoesNotExist:
             raise NotFound
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Detail API",
+        operation_description="특정 방을 조회",
+        responses={
+            status.HTTP_200_OK: openapi.Response("조회 완료"),
+        },
+    )
     def get(self, request, pk):
         room = self.get_object(pk)
         serializer = serializers.RoomDetailSerializer(
@@ -148,6 +162,13 @@ class RoomDetail(APIView):
         )
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Update API",
+        operation_description="id를 전달받아 해당 Room을 수정",
+        responses={
+            status.HTTP_200_OK: openapi.Response("수정 완료"),
+        },
+    )
     def put(self, request, pk):
         selector = RoomSelector()
         room = selector.get_room(pk)
@@ -185,6 +206,13 @@ class RoomDetail(APIView):
         else:
             return Response(serializer.errors)
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Delete API",
+        operation_description="id를 전달받아 해당 Room을 삭제",
+        responses={
+            status.HTTP_204_NO_CONTENT: openapi.Response("삭제 완료"),
+        },
+    )
     def delete(self, request, pk):
         room = self.get_object(pk)
         if room.owner != request.user:
