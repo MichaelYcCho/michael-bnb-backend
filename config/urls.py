@@ -26,13 +26,13 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v0/rooms/", include("rooms.urls")),
-    path("api/v0/categories/", include("categories.urls")),
-    path("api/v0/experiences/", include("experiences.urls")),
-    path("api/v0/medias/", include("medias.urls")),
-    path("api/v0/wishlists/", include("wishlists.urls")),
-    path("api/v0/users/", include("users.urls")),
-    path("api/v0/bookings/", include("bookings.urls")),
+    path("api/rooms/", include("rooms.urls")),
+    path("api/categories/v0/", include("categories.urls")),
+    path("api/experiences/v0/", include("experiences.urls")),
+    path("api/medias/v0/", include("medias.urls")),
+    path("api/wishlists/v0/", include("wishlists.urls")),
+    path("api/users/v0/", include("users.urls")),
+    path("api/bookings/v0/", include("bookings.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

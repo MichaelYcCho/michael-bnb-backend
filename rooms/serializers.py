@@ -20,6 +20,37 @@ class AmenitySerializer(serializers.ModelSerializer):
         )
 
 
+class RoomCreateInputSerializer(serializers.Serializer):
+    """
+    Room Create Input Serializer
+    """
+
+    name = serializers.CharField(label="방 이름")
+    country = serializers.CharField(label="국가")
+    city = serializers.CharField(label="도시")
+    price = serializers.IntegerField(label="가격", default=0)
+    rooms = serializers.IntegerField(label="방 개수", default=1)
+    toilets = serializers.IntegerField(label="화장실 개수", default=1)
+    description = serializers.CharField(label="방 설명")
+    pet_friendly = serializers.BooleanField(label="반려동물 동반 가능 여부", default=False)
+    category = serializers.CharField(label="카테고리 ID")
+    amenities = serializers.ListField(child=serializers.CharField(), allow_null=True)
+
+    class Meta:
+        ref_name = "room_create_input"
+
+
+class RoomCreateOutputSerializer(serializers.Serializer):
+    """
+    Room Create Output Serializer
+    """
+
+    id = serializers.IntegerField()
+
+    class Meta:
+        ref_name = "room_create_output"
+
+
 class RoomDetailSerializer(serializers.ModelSerializer):
 
     owner = TinyUserSerializer(read_only=True)
