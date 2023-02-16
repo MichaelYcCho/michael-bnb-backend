@@ -21,6 +21,7 @@ from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
 from .selectors.selector_v0_room import RoomSelector
 from .serializers import RoomListOutputSerializer
+from .services.service_v1_room import RoomCreateService
 
 
 class Amenities(APIView):
@@ -101,40 +102,18 @@ class RoomCreateAPI(APIView):
     @swagger_auto_schema(
         operation_summary="V1 Room Create API",
         operation_description="새로운 방을 생성",
+        request_body=serializers.RoomCreateInputSerializer,
         responses={
-            status.HTTP_200_OK: openapi.Response("생성 완료"),
+            status.HTTP_201_CREATED: openapi.Response("생성 완료"),
         },
     )
     def post(self, request):
-        serializer = serializers.RoomDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            category_pk = request.data.get("category")
-            if not category_pk:
-                raise ParseError("Category is required.")
-            try:
-                category = Category.objects.get(pk=category_pk)
-                if category.kind == Category.CategoryKindChoices.EXPERIENCES:
-                    raise ParseError("The category kind should be 'rooms'")
-            except Category.DoesNotExist:
-                raise ParseError("Category not found")
-            try:
-                with transaction.atomic():
-                    room = serializer.save(
-                        owner=request.user,
-                        category=category,
-                    )
-                    amenities = request.data.get("amenities")
-                    for amenity_pk in amenities:
-                        amenity = Amenity.objects.get(pk=amenity_pk)
-                        room.amenities.add(amenity)
-                    serializer = serializers.RoomDetailSerializer(
-                        room, context={"request": request}
-                    )
-                    return Response(serializer.data)
-            except Exception:
-                raise ParseError("Amenity not found")
-        else:
-            return Response(serializer.errors)
+        input_serializer = serializers.RoomCreateInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+        service = RoomCreateService(request, input_serializer.validated_data)
+        room = service.create_room()
+        output_serializer = serializers.RoomCreateOutputSerializer({"id": room.id})
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RoomDetail(APIView):
