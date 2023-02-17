@@ -1,8 +1,10 @@
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
-
 from rest_framework.response import Response
 
 from bookings.models import Booking
@@ -25,6 +27,15 @@ class GetMyBookingsAPI(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="V1 나의 예약조회 API",
+        operation_description="새로운 방을 생성",
+        responses={
+            status.HTTP_201_CREATED: openapi.Response(
+                "조회 완료", MyBookingOutputSerializer(many=True)
+            ),
+        },
+    )
     def get(self, request):
         selector = BookingSelector()
         bookings = selector.get_my_bookings_selector(request.user)
