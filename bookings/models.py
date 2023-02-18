@@ -1,14 +1,12 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
+from utils.choices import BookingKindChoices
+
 
 class Booking(TimeStampedModel):
 
     """Booking Model Definition"""
-
-    class BookingKindChoices(models.TextChoices):
-        ROOM = "room", "Room"
-        EXPERIENCE = "experience", "Experience"
 
     kind = models.CharField(
         max_length=15,
