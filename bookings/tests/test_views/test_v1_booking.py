@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -137,5 +138,93 @@ class BookingCheckTestCase(APITestCase):
         url = f"/api/bookings/v1/check/{self.room.id}"
         res = self.client.get(url)
 
-        self.assertEqual(res.json()["error_code"], 300002)
+        self.assertEqual(res.json()["error_code"], 300005)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_success_create_booking(self) -> None:
+        """예약 생성 성공"""
+        url = "/api/bookings/v1/create"
+        data = {
+            "room_id": self.room.id,
+            "guests": 2,
+            "check_in": "2023-02-21",
+            "check_out": "2023-02-25",
+        }
+        self.client.force_authenticate(self.guest)
+        res = self.client.post(url, data)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_failed_create_already_booking(self) -> None:
+        """예약 생성 실패 -> 이미 예약된 방"""
+        mommy.make(
+            "Booking",
+            room=self.room,
+            user=self.guest,
+            check_in=datetime(2023, 2, 21),
+            check_out=datetime(2023, 2, 25),
+        )
+
+        url = "/api/bookings/v1/create"
+        data = {
+            "room_id": self.room.id,
+            "guests": 2,
+            "check_in": "2023-02-21",
+            "check_out": "2023-02-25",
+        }
+        self.client.force_authenticate(self.guest)
+        res = self.client.post(url, data)
+
+        self.assertEqual(res.json()["error_code"], 300006)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @freeze_time("2023-02-03", tz_offset=9)
+    def test_failed_create_booking_check_in(self) -> None:
+        """예약 생성 실패 -> 체크인이 오늘 이전값일때"""
+
+        url = "/api/bookings/v1/create"
+        data = {
+            "room_id": self.room.id,
+            "guests": 2,
+            "check_in": "2023-01-21",
+            "check_out": "2023-02-25",
+        }
+        self.client.force_authenticate(self.guest)
+        res = self.client.post(url, data)
+
+        self.assertEqual(res.json()["error_code"], 300003)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @freeze_time("2023-02-05", tz_offset=9)
+    def test_failed_create_booking_check_out(self) -> None:
+        """예약 생성 실패 -> 체크아웃이 오늘 이전일때"""
+
+        url = "/api/bookings/v1/create"
+        data = {
+            "room_id": self.room.id,
+            "guests": 2,
+            "check_in": "2023-02-05",
+            "check_out": "2023-02-03",
+        }
+        self.client.force_authenticate(self.guest)
+        res = self.client.post(url, data)
+
+        self.assertEqual(res.json()["error_code"], 300004)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @freeze_time("2023-01-05", tz_offset=9)
+    def test_failed_create_booking_check_date(self) -> None:
+        """예약 생성 실패 -> 체크아웃이 체크인보다 이전일때"""
+
+        url = "/api/bookings/v1/create"
+        data = {
+            "room_id": self.room.id,
+            "guests": 2,
+            "check_in": "2023-02-05",
+            "check_out": "2023-02-03",
+        }
+        self.client.force_authenticate(self.guest)
+        res = self.client.post(url, data)
+
+        self.assertEqual(res.json()["error_code"], 300005)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
