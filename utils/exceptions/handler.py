@@ -10,7 +10,7 @@ from rest_framework.serializers import as_serializer_error
 from rest_framework.views import exception_handler
 
 
-VALIDATION_ERROR_CODE = 000000
+VALIDATION_ERROR_CODE = 999999
 
 
 def custom_exception_handler(exc: Any, context: Any) -> Optional[Response]:
@@ -31,17 +31,33 @@ def custom_exception_handler(exc: Any, context: Any) -> Optional[Response]:
             "error_class": exc.__class__.__name__,
         }
 
-        # custom exception
-        error_detail = response.data.pop("detail", None)
-        targets = [
-            {"string": str(error_detail), "code": error_detail.code}
-            if error_detail is not None
-            else "N/A"
-        ]
-        data["targets"] = targets
-        response.data.update(data)
+        # Serializer exception에 대한 처리
+        if isinstance(exc, serializers.ValidationError):
+            targets = []
+            # serializer raise exception, django clean exception
+            data["error_code"] = VALIDATION_ERROR_CODE
+            if isinstance(response.data, list):
+                logging.error("[Exception] - List exception, Handling")
+                data["error_detail"] = response.data[0]
+            elif isinstance(response.data, dict):
+                logging.error("[Exception] - Dict exception Handling")
 
+                targets = [
+                    {"string": key, "code": val} for key, val in response.data.items()
+                ]
+            data["targets"] = targets
+            response.data = data
+
+        else:
+            # custom exception
+            error_detail = response.data.pop("detail", None)
+            targets = [
+                {"string": str(error_detail), "code": error_detail.code}
+                if error_detail is not None
+                else "N/A"
+            ]
+            data["targets"] = targets
+            response.data.update(data)
         if response.data["error_code"] != VALIDATION_ERROR_CODE:
             response.data.pop("targets", None)
-
     return response

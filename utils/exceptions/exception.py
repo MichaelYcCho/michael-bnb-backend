@@ -25,7 +25,22 @@ class BookingExceptions:
         status_code = status.HTTP_400_BAD_REQUEST
         default_detail = "예약자와 일치하지 않습니다"
 
-    class InvalidCheckDate(APIException):
-        error_code = 300002
+    class InvalidCheckIn(APIException):
+        error_code = 300003
         status_code = status.HTTP_400_BAD_REQUEST
-        default_detail = "체크인/체크아웃 날짜를 확인해주세요"
+        default_detail = "오늘 보다 이전 날짜로 체크인 할수 없습니다"
+
+    class InvalidCheckOut(APIException):
+        error_code = 300004
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "체크 아웃날짜는 오늘 이후로 설정되어야합니다"
+
+    class InvalidCheckDate(APIException):
+        error_code = 300005
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "체크아웃 날짜는 체크인 날짜보다 이후여야 합니다"
+
+    class AlreadyBooked(APIException):
+        error_code = 300006
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "이미 예약된 날짜입니다"

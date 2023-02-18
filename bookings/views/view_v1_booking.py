@@ -122,15 +122,29 @@ class CreateBookingsAPI(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def post(self, request: Request, room_id: int) -> Response:
+    @swagger_auto_schema(
+        operation_summary="V1 Booking 예약 API",
+        operation_description="해당 날짜에 예약을 한다",
+        request_body=CreateBookingInputSerializer,
+        responses={
+            status.HTTP_201_CREATED: openapi.Response(
+                "예약완료", CheckBooingOutPutSerializer
+            ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                BookingExceptions.InvalidCheckDate.default_detail
+            ),
+        },
+    )
+    def post(self, request: Request) -> Response:
         """
         예약 생성 API
         """
-        selector = RoomSelector()
-        room = selector.get_room(room_id)
-
         input_serializer = CreateBookingInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
+
+        room_id = input_serializer.data.get("room_id")
+        selector = RoomSelector()
+        room = selector.get_room(room_id)
 
         booking_service = BookingCreateService(
             request.user, room, input_serializer.data
@@ -139,4 +153,4 @@ class CreateBookingsAPI(APIView):
         booking = booking_service.create_booking()
 
         serializer = CreateBookingOutputSerializer(booking)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

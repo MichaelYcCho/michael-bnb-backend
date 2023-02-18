@@ -4,6 +4,7 @@ from utils.serializers import inline_serializer
 
 
 class CreateBookingInputSerializer(serializers.Serializer):
+    room_id = serializers.IntegerField()
     check_in = serializers.DateField()
     check_out = serializers.DateField()
     guests = serializers.IntegerField(required=False, default=1)
