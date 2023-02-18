@@ -36,7 +36,7 @@ class GetMyBookingsAPI(APIView):
             ),
         },
     )
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         selector = BookingSelector()
         bookings = selector.get_my_bookings_selector(request.user)
         serializer = MyBookingOutputSerializer(bookings, many=True)
@@ -57,7 +57,7 @@ class ManageBookingsAPI(APIView):
             ),
         },
     )
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         rooms = Room.objects.filter(owner=request.user)
         bookings = Booking.objects.filter(room__in=rooms)
         serializer = ManageBookingsOutPutSerializer(bookings, many=True)
@@ -68,7 +68,7 @@ class CancelBookingAPI(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, booking_id: int):
+    def post(self, request: Request, booking_id: int) -> Response:
         selector = BookingSelector(booking_id)
         booking = selector.get_booking()
 
