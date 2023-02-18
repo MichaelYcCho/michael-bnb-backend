@@ -3,8 +3,6 @@ from rest_framework.test import APITestCase
 
 from model_mommy import mommy
 
-from rooms.models import Room
-
 
 class BookingTestCase(APITestCase):
     """
@@ -24,10 +22,9 @@ class BookingTestCase(APITestCase):
     def test_success_get_my_booking(self) -> None:
         """내 예약내역 조회"""
 
+        url = "/api/bookings/v1/my"
         self.client.force_authenticate(self.guest)
-        self.url = "/api/bookings/v1/my"
-
-        res = self.client.get(self.url)
+        res = self.client.get(url)
 
         self.assertEqual(len(res.json()), 1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -35,11 +32,19 @@ class BookingTestCase(APITestCase):
     def test_success_get_my_booking_None(self) -> None:
         """내 예약내역 조회"""
         self.nobody = mommy.make("users.User")
-
+        url = "/api/bookings/v1/my"
         self.client.force_authenticate(self.nobody)
-        self.url = "/api/bookings/v1/my"
-
-        res = self.client.get(self.url)
+        res = self.client.get(url)
 
         self.assertEqual(len(res.json()), 0)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_success_get_managing_booking(self) -> None:
+        """내 방 예약내역 조회"""
+
+        url = "/api/bookings/v1/manage"
+        self.client.force_authenticate(self.owner)
+        res = self.client.get(url)
+
+        self.assertEqual(len(res.json()), 1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

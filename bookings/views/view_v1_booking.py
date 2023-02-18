@@ -8,14 +8,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from bookings.models import Booking
-from bookings.selectors.selector_v0_booking import BookingSelector
+from bookings.selectors.selector_v1_booking import BookingSelector
 from bookings.serializers import (
     CreateBookingInputSerializer,
     CreateBookingOutputSerializer,
     MyBookingOutputSerializer,
     ManageBookingsOutPutSerializer,
 )
-from bookings.services.service_v0_booking import (
+from bookings.services.service_v1_booking import (
     BookingCreateService,
     BookingCancelService,
 )
@@ -29,7 +29,7 @@ class GetMyBookingsAPI(APIView):
 
     @swagger_auto_schema(
         operation_summary="V1 나의 예약조회 API",
-        operation_description="새로운 방을 생성",
+        operation_description="내 예약정보를 조회한다(Guest)",
         responses={
             status.HTTP_201_CREATED: openapi.Response(
                 "조회 완료", MyBookingOutputSerializer(many=True)
@@ -44,10 +44,19 @@ class GetMyBookingsAPI(APIView):
 
 
 class ManageBookingsAPI(APIView):
-    # TODO : Host Permission
 
+    # TODO : Host Permission
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="V1 나의 Booking 관리 API",
+        operation_description="내 방의 예약정보를 조회한다(Host)",
+        responses={
+            status.HTTP_201_CREATED: openapi.Response(
+                "조회 완료", MyBookingOutputSerializer(many=True)
+            ),
+        },
+    )
     def get(self, request):
         rooms = Room.objects.filter(owner=request.user)
         bookings = Booking.objects.filter(room__in=rooms)
