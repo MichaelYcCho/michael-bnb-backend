@@ -14,6 +14,7 @@ from bookings.serializers import (
     CreateBookingOutputSerializer,
     MyBookingOutputSerializer,
     ManageBookingsOutPutSerializer,
+    CheckBooingOutPutSerializer,
 )
 from bookings.services.service_v1_booking import (
     BookingCreateService,
@@ -21,6 +22,7 @@ from bookings.services.service_v1_booking import (
 )
 from rooms.models import Room
 from rooms.selectors.selector_v0_room import RoomSelector
+from utils.exceptions.exception import BookingExceptions
 
 
 class GetMyBookingsAPI(APIView):
@@ -72,8 +74,16 @@ class CancelBookingAPI(APIView):
         operation_summary="V1 Booking 취소 API",
         operation_description="예약한 방을 취소한다",
         responses={
-            status.HTTP_201_CREATED: openapi.Response(
+            status.HTTP_200_OK: openapi.Response(
                 "취소 완료", MyBookingOutputSerializer(many=True)
+            ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                " or ".join(
+                    [
+                        BookingExceptions.NotFoundBooking.default_detail,
+                        BookingExceptions.NotMatchingUser.default_detail,
+                    ]
+                )
             ),
         },
     )
@@ -88,13 +98,24 @@ class CancelBookingAPI(APIView):
 
 
 class CheckBookingAPI(APIView):
+    @swagger_auto_schema(
+        operation_summary="V1 Booking 예약 가능여부 조회 API",
+        operation_description="해당 날짜에 예약이 가능한지 확인한다",
+        responses={
+            status.HTTP_200_OK: openapi.Response("조회", CheckBooingOutPutSerializer),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                BookingExceptions.InvalidCheckDate.default_detail
+            ),
+        },
+    )
     def get(self, request: Request, room_id: int) -> Response:
         room_selector = RoomSelector()
         room = room_selector.get_room(room_id)
         booking_selector = BookingSelector()
         is_allow = booking_selector.is_exists(room, request)
+        output_serializer = CheckBooingOutPutSerializer({"is_allow": is_allow})
 
-        return Response({"is_allow": is_allow})
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
 
 
 class CreateBookingsAPI(APIView):

@@ -34,8 +34,10 @@ class BookingSelector:
         check_in = request.query_params.get("check_in")
         check_out = request.query_params.get("check_out")
 
-        is_allow = True
+        if check_in is None or check_out is None:
+            raise BookingExceptions.InvalidCheckDate
 
+        is_allow = True
         exists = Booking.objects.filter(
             room=room,
             check_in__lte=check_out,

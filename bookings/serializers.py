@@ -64,3 +64,7 @@ class ManageBookingsOutPutSerializer(serializers.Serializer):
     check_out = serializers.DateField()
     guests = serializers.IntegerField()
     is_canceled = serializers.BooleanField()
+
+
+class CheckBooingOutPutSerializer(serializers.Serializer):
+    is_allow = serializers.BooleanField()

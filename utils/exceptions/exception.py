@@ -24,3 +24,8 @@ class BookingExceptions:
         error_code = 300001
         status_code = status.HTTP_400_BAD_REQUEST
         default_detail = "예약자와 일치하지 않습니다"
+
+    class InvalidCheckDate(APIException):
+        error_code = 300002
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "체크인/체크아웃 날짜를 확인해주세요"
