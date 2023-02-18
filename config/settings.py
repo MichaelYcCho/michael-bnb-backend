@@ -203,7 +203,8 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "config.authentication.JWTAuthentication",
-    ]
+    ],
+    "EXCEPTION_HANDLER": "utils.exceptions.handler.custom_exception_handler",
 }
 
 
