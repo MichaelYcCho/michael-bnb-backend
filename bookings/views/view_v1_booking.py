@@ -68,9 +68,18 @@ class CancelBookingAPI(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request: Request, booking_id: int) -> Response:
+    @swagger_auto_schema(
+        operation_summary="V1 Booking 취소 API",
+        operation_description="예약한 방을 취소한다",
+        responses={
+            status.HTTP_201_CREATED: openapi.Response(
+                "취소 완료", MyBookingOutputSerializer(many=True)
+            ),
+        },
+    )
+    def patch(self, request: Request, booking_id: int) -> Response:
         selector = BookingSelector(booking_id)
-        booking = selector.get_booking()
+        booking = selector.get_booking(request.user)
 
         service = BookingCancelService(request.user, booking)
         service.cancel_booking()
