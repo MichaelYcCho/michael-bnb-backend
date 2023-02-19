@@ -144,3 +144,49 @@ class RoomListOutputSerializer(serializers.Serializer):
         },
     )
     is_wish_listed = serializers.BooleanField(source="_is_wish_listed")
+
+
+class RoomDetailOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    price = serializers.IntegerField()
+    toilets = serializers.IntegerField()
+    rooms = serializers.IntegerField()
+    address = serializers.CharField()
+    pet_friendly = serializers.BooleanField()
+    kind = serializers.CharField()
+    description = serializers.CharField()
+    owner = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "username": serializers.CharField(),
+            "avatar": serializers.URLField(),
+        }
+    )
+    amenities = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "description": serializers.CharField(),
+        },
+    )
+    category = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "kind": serializers.CharField(),
+        }
+    )
+    rating = serializers.FloatField(source="_rating")
+    is_owner = serializers.BooleanField(source="_is_owner")
+    photos = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(required=False),
+            "file": serializers.URLField(required=False),
+            "description": serializers.CharField(required=False),
+        },
+    )

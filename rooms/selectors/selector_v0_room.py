@@ -29,6 +29,8 @@ class RoomSelector:
         room = Room.objects.filter(pk=room_id).first()
         if room is None:
             raise NotFound
+        if self.request is None:
+            return False
         return room.owner == self.request.user
 
     def is_wish_listed(self, room_id: int) -> bool:
@@ -55,9 +57,10 @@ class RoomSelector:
 
         return rooms
 
-    @staticmethod
-    def get_room(room_id: int) -> Room:
+    def get_room(self, room_id: int) -> Room:
         room = Room.objects.filter(pk=room_id).first()
+        room._rating = self.get_room_avg_rating(room_id)
+        room._is_owner = self.is_owner(room_id)
         if room is None:
             raise NotFound
         return room
