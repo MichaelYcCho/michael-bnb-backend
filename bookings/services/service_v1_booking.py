@@ -1,16 +1,15 @@
 from datetime import date, datetime
 
 from django.utils import timezone
-from rest_framework import serializers
 
 from bookings.models import Booking
 from rooms.models import Room
 from users.models import User
+from utils.choices import BookingKindChoices
+from utils.exceptions.exception import BookingExceptions
 
 
 class BookingCreateService:
-    # TODO : 커스텀 에러핸들러로 교체할것
-
     def __init__(self, user: User, room: Room, serializer_data: dict):
         self.user = user
         self.room = room
@@ -25,12 +24,12 @@ class BookingCreateService:
 
     def validate_check_in(self, check_in: date):
         if self.now > check_in:
-            raise serializers.ValidationError("Can't book in the past!")
+            raise BookingExceptions.InvalidCheckIn
         return check_in
 
     def validate_check_out(self, check_out: date):
         if self.now > check_out:
-            raise serializers.ValidationError("Can't book in the past!")
+            raise BookingExceptions.InvalidCheckOut
         return check_out
 
     def validate(self) -> bool:
@@ -39,25 +38,23 @@ class BookingCreateService:
 
         room = self.room
         if self.check_out <= self.check_in:
-            raise serializers.ValidationError(
-                "Check in should be smaller than check out."
-            )
+            raise BookingExceptions.InvalidCheckDate
+
         if Booking.objects.filter(
             room=room,
             check_in__lte=self.check_out,
             check_out__gte=self.check_in,
             is_canceled=False,
         ).exists():
-            raise serializers.ValidationError(
-                "Those (or some) of those dates are already taken."
-            )
+            raise BookingExceptions.AlreadyBooked
         return True
 
     def create_booking(self) -> Booking:
+        self.validate()
         booking = Booking(
             room=self.room,
             user=self.user,
-            kind=Booking.BookingKindChoices.ROOM,
+            kind=BookingKindChoices.ROOM,
             check_in=self.check_in,
             check_out=self.check_out,
             guests=self.guests,

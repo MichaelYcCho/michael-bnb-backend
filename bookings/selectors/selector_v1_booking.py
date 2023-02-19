@@ -3,18 +3,24 @@ from rest_framework.request import Request
 from bookings.models import Booking
 from rooms.models import Room
 from users.models import User
+from utils.exceptions.exception import BookingExceptions
 
 
 class BookingSelector:
     def __init__(self, pk: int = None) -> None:
         self.booking_pk = pk
 
-    def get_booking(self) -> Booking:
+    def get_booking(self, user: User) -> Booking:
         """예약 조회"""
-        booking = Booking.objects.filter(pk=self.booking_pk).first()
+        request_user = user
+        booking = Booking.objects.filter(pk=self.booking_pk, is_canceled=False).first()
         if booking:
-            return booking
-        raise Booking.DoesNotExist
+            if booking.user == request_user:
+                return booking
+            else:
+                raise BookingExceptions.NotMatchingUser
+
+        raise BookingExceptions.NotFoundBooking
 
     @staticmethod
     def get_my_bookings_selector(user: User) -> Booking:
@@ -28,8 +34,10 @@ class BookingSelector:
         check_in = request.query_params.get("check_in")
         check_out = request.query_params.get("check_out")
 
-        is_allow = True
+        if check_in is None or check_out is None:
+            raise BookingExceptions.InvalidCheckDate
 
+        is_allow = True
         exists = Booking.objects.filter(
             room=room,
             check_in__lte=check_out,

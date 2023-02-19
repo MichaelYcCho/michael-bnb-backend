@@ -39,11 +39,7 @@ DEBUG = "RENDER" not in os.environ
 
 APP_ENV = env("APP_ENV")
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "backend.michael-bnb.store",
-]
+ALLOWED_HOSTS = [i for i in os.getenv("ALLOWED_HOSTS", "").split(",") if i]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -55,6 +51,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "drf_yasg",
 ]
 
 CUSTOM_APPS = [
@@ -202,33 +199,36 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         "config.authentication.JWTAuthentication",
-    ]
+    ],
+    "EXCEPTION_HANDLER": "utils.exceptions.handler.custom_exception_handler",
 }
 
 
 if APP_ENV == "PROD":
     CORS_ALLOWED_ORIGINS = [
-        "https://michael-bnb.store",
-        "https://www.michael-bnb.store",
+        i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
     ]
     CSRF_TRUSTED_ORIGINS = [
-        "https://michael-bnb.store",
-        "https://www.michael-bnb.store",
+        i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
     ]
 
 else:
-    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]
+    CORS_ALLOWED_ORIGINS = [
+        i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 # Sentry
 if APP_ENV == "PROD":
-    SESSION_COOKIE_DOMAIN = ".michael-bnb.store"
-    CSRF_COOKIE_DOMAIN = ".michael-bnb.store"
+    SESSION_COOKIE_DOMAIN = env("COOKIE_DOMAIN")
+    CSRF_COOKIE_DOMAIN = env("COOKIE_DOMAIN")
 
     sentry_sdk.init(
-        dsn="https://3d5da01bf7f1436e8c946979ff2ea08a@o347460.ingest.sentry.io/4504666109575168",
+        dsn=env("SENTRY_DSN"),
         integrations=[
             DjangoIntegration(),
         ],

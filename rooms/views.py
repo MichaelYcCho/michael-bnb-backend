@@ -1,9 +1,11 @@
 from django.conf import settings
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from django.db import transaction
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
 from rest_framework.exceptions import (
@@ -18,6 +20,7 @@ from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
 from .selectors.selector_v0_room import RoomSelector
 from .serializers import RoomListOutputSerializer
+from .services.service_v1_room import RoomCreateService
 
 
 class Amenities(APIView):
@@ -74,6 +77,15 @@ class RoomsListAPI(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room List API",
+        operation_description="현재 등록된 모든 방을 조회",
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                "조회 완료", RoomListOutputSerializer(many=True)
+            ),
+        },
+    )
     def get(self, request: Request):
 
         rooms = RoomSelector(request).get_all_rooms()
@@ -86,36 +98,21 @@ class RoomCreateAPI(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Create API",
+        operation_description="새로운 방을 생성",
+        request_body=serializers.RoomCreateInputSerializer,
+        responses={
+            status.HTTP_201_CREATED: openapi.Response("생성 완료"),
+        },
+    )
     def post(self, request):
-        serializer = serializers.RoomDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            category_pk = request.data.get("category")
-            if not category_pk:
-                raise ParseError("Category is required.")
-            try:
-                category = Category.objects.get(pk=category_pk)
-                if category.kind == Category.CategoryKindChoices.EXPERIENCES:
-                    raise ParseError("The category kind should be 'rooms'")
-            except Category.DoesNotExist:
-                raise ParseError("Category not found")
-            try:
-                with transaction.atomic():
-                    room = serializer.save(
-                        owner=request.user,
-                        category=category,
-                    )
-                    amenities = request.data.get("amenities")
-                    for amenity_pk in amenities:
-                        amenity = Amenity.objects.get(pk=amenity_pk)
-                        room.amenities.add(amenity)
-                    serializer = serializers.RoomDetailSerializer(
-                        room, context={"request": request}
-                    )
-                    return Response(serializer.data)
-            except Exception:
-                raise ParseError("Amenity not found")
-        else:
-            return Response(serializer.errors)
+        input_serializer = serializers.RoomCreateInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+        service = RoomCreateService(request, input_serializer.validated_data)
+        room = service.create_room()
+        output_serializer = serializers.RoomCreateOutputSerializer({"id": room.id})
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RoomDetail(APIView):
@@ -128,6 +125,13 @@ class RoomDetail(APIView):
         except Room.DoesNotExist:
             raise NotFound
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Detail API",
+        operation_description="특정 방을 조회",
+        responses={
+            status.HTTP_200_OK: openapi.Response("조회 완료"),
+        },
+    )
     def get(self, request, pk):
         room = self.get_object(pk)
         serializer = serializers.RoomDetailSerializer(
@@ -136,6 +140,13 @@ class RoomDetail(APIView):
         )
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Update API",
+        operation_description="id를 전달받아 해당 Room을 수정",
+        responses={
+            status.HTTP_200_OK: openapi.Response("수정 완료"),
+        },
+    )
     def put(self, request, pk):
         selector = RoomSelector()
         room = selector.get_room(pk)
@@ -173,6 +184,13 @@ class RoomDetail(APIView):
         else:
             return Response(serializer.errors)
 
+    @swagger_auto_schema(
+        operation_summary="V1 Room Delete API",
+        operation_description="id를 전달받아 해당 Room을 삭제",
+        responses={
+            status.HTTP_204_NO_CONTENT: openapi.Response("삭제 완료"),
+        },
+    )
     def delete(self, request, pk):
         room = self.get_object(pk)
         if room.owner != request.user:
