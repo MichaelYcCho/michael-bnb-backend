@@ -246,6 +246,7 @@ GH_ID = env("GH_ID")
 GH_SECRET = env("GH_SECRET")
 
 KAKAO_ID = env("KAKAO_ID")
+KAKAO_REDIRECT_URI = env("KAKAO_REDIRECT_URI")
 
 # Cloud Flare
 # https://dash.cloudflare.com/
