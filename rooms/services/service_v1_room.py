@@ -4,9 +4,10 @@ from rest_framework.request import Request
 
 from categories.models import Category
 from rooms.models import Amenity, Room
+from utils.exceptions.exception import RoomExceptions
 
 
-class RoomCreateService:
+class RoomService:
     def __init__(self, request: Request, data: dict) -> None:
         self.request = request
         self.room_name = data.get("name")
@@ -51,7 +52,54 @@ class RoomCreateService:
             for amenity_id in self.amenities_list:
                 amenity = Amenity.objects.filter(pk=amenity_id).first()
                 if amenity is None:
-                    raise ParseError("Amenity not found")
+                    raise RoomExceptions.NotFoundAmenity
                 room.amenities.add(amenity)
 
         return room
+
+    def update_room(self, room: Room) -> Room:
+        if not room.owner == self.request.user:
+            raise RoomExceptions.UserIsNotOwner
+
+        category = Category.objects.filter(pk=self.category_id).first()
+        if category is None:
+            raise RoomExceptions.RequireCategory
+        if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+            raise RoomExceptions.CategoryShouldRoom
+
+        with transaction.atomic():
+            room.name = self.room_name
+            room.country = self.country
+            room.city = self.city
+            room.price = self.price
+            room.rooms = self.rooms
+            room.toilets = self.toilets
+            room.description = self.description
+            room.pet_friendly = self.pet_friendly
+            room.category = Category.objects.get(pk=self.category_id)
+            room.save()
+
+            room.amenities.clear()
+            for amenity_id in self.amenities_list:
+                amenity = Amenity.objects.filter(pk=amenity_id).first()
+                if amenity is None:
+                    raise RoomExceptions.NotFoundAmenity
+                room.amenities.add(amenity)
+
+        return room
+
+
+class RoomDeleteService:
+    def __init__(self, request: Request, room: Room) -> None:
+        self.request = request
+        self.room = room
+
+    def delete_room(self) -> None:
+        room = Room.objects.filter(pk=self.room.id).first()
+        if room is None:
+            raise RoomExceptions.NotFoundRoom
+
+        if not room.owner == self.request.user:
+            raise RoomExceptions.UserIsNotOwner
+
+        room.delete()

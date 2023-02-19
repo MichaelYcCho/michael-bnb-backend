@@ -1,23 +1,8 @@
 from rest_framework import serializers
 
 from utils.serializers import inline_serializer
-from .models import Amenity, Room
-from users.serializers import TinyUserSerializer
-from reviews.serializers import ReviewSerializer
-from categories.serializers import CategorySerializer
+from rooms.models import Amenity, Room
 from medias.serializers import PhotoSerializer
-from wishlists.models import Wishlist
-from .selectors.selector_v0_room import RoomSelector
-
-
-class AmenitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Amenity
-        fields = (
-            "pk",
-            "name",
-            "description",
-        )
 
 
 class RoomCreateInputSerializer(serializers.Serializer):
@@ -51,46 +36,108 @@ class RoomCreateOutputSerializer(serializers.Serializer):
         ref_name = "room_create_output"
 
 
-class RoomDetailSerializer(serializers.ModelSerializer):
+class RoomListOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    owner = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "username": serializers.CharField(),
+        }
+    )
+    name = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    price = serializers.IntegerField()
+    rating = serializers.FloatField(source="_rating")
+    is_owner = serializers.BooleanField(source="_is_owner")
+    photos = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(required=False),
+            "file": serializers.URLField(required=False),
+            "description": serializers.CharField(required=False),
+        },
+    )
+    is_wish_listed = serializers.BooleanField(source="_is_wish_listed")
 
-    owner = TinyUserSerializer(read_only=True)
-    amenities = AmenitySerializer(
-        read_only=True,
-        many=True,
+
+class RoomDetailOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    price = serializers.IntegerField()
+    toilets = serializers.IntegerField()
+    rooms = serializers.IntegerField()
+    address = serializers.CharField()
+    pet_friendly = serializers.BooleanField()
+    kind = serializers.CharField()
+    description = serializers.CharField()
+    owner = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "username": serializers.CharField(),
+            "avatar": serializers.URLField(),
+        }
     )
-    category = CategorySerializer(
-        read_only=True,
+    amenities = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "description": serializers.CharField(),
+        },
     )
-    rating = serializers.SerializerMethodField()
-    is_owner = serializers.SerializerMethodField()
-    is_liked = serializers.SerializerMethodField()
-    photos = PhotoSerializer(many=True, read_only=True)
+    category = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "kind": serializers.CharField(),
+        }
+    )
+    rating = serializers.FloatField(source="_rating")
+    is_owner = serializers.BooleanField(source="_is_owner")
+    photos = inline_serializer(
+        many=True,  # type:ignore
+        fields={
+            "id": serializers.IntegerField(required=False),
+            "file": serializers.URLField(required=False),
+            "description": serializers.CharField(required=False),
+        },
+    )
+
+
+class RoomUpdateInputSerializer(serializers.Serializer):
+    """
+    Room Update Input Serializer
+    """
+
+    room_id = serializers.IntegerField(label="방 ID")
+    name = serializers.CharField(label="방 이름")
+    country = serializers.CharField(label="국가")
+    city = serializers.CharField(label="도시")
+    address = serializers.CharField(label="주소")
+    price = serializers.IntegerField(label="가격")
+    rooms = serializers.IntegerField(label="방 개수")
+    toilets = serializers.IntegerField(label="화장실 개수")
+    description = serializers.CharField(label="방 설명", allow_blank=True)
+    pet_friendly = serializers.BooleanField(label="반려동물 동반 가능 여부", default=False)
+    category = serializers.CharField(label="카테고리 ID")
+    kind = serializers.CharField(label="방 종류")
+    amenities = serializers.ListField(child=serializers.CharField(), allow_null=True)
 
     class Meta:
-        model = Room
-        fields = "__all__"
+        ref_name = "room_create_input"
 
-    def get_rating(self, room):
-        selector = RoomSelector()
-        return selector.get_room_avg_rating(room.id)
 
-    def get_is_owner(self, room):
-        request = self.context.get("request")
-        if request:
-            return room.owner == request.user
-        return False
-
-    def get_is_liked(self, room) -> bool:
-        request = self.context.get("request")
-        is_liked = False
-
-        if request.user.is_authenticated:
-            is_liked = Wishlist.objects.filter(
-                user=request.user,
-                rooms__pk=room.pk,
-            ).exists()
-
-        return is_liked
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Amenity
+        fields = (
+            "pk",
+            "name",
+            "description",
+        )
 
 
 class RoomListSerializer(serializers.ModelSerializer):
@@ -119,28 +166,3 @@ class RoomListSerializer(serializers.ModelSerializer):
     def get_is_owner(self, room):
         request = self.context["request"]
         return room.owner == request.user
-
-
-class RoomListOutputSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    owner = inline_serializer(
-        fields={
-            "id": serializers.IntegerField(),
-            "username": serializers.CharField(),
-        }
-    )
-    name = serializers.CharField()
-    country = serializers.CharField()
-    city = serializers.CharField()
-    price = serializers.IntegerField()
-    rating = serializers.FloatField(source="_rating")
-    is_owner = serializers.BooleanField(source="_is_owner")
-    photos = inline_serializer(
-        many=True,  # type:ignore
-        fields={
-            "id": serializers.IntegerField(required=False),
-            "file": serializers.URLField(required=False),
-            "description": serializers.CharField(required=False),
-        },
-    )
-    is_wish_listed = serializers.BooleanField(source="_is_wish_listed")

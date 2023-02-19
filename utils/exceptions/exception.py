@@ -11,7 +11,30 @@ class BaseExceptions:
 
 
 class RoomExceptions:
-    pass
+    class NotFoundRoom(APIException):
+        error_code = 200000
+        status_code = status.HTTP_404_NOT_FOUND
+        default_detail = "존재하지 않는 방입니다"
+
+    class UserIsNotOwner(APIException):
+        error_code = 200001
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "owner가 아닙니다"
+
+    class NotFoundAmenity(APIException):
+        error_code = 200002
+        status_code = status.HTTP_404_NOT_FOUND
+        default_detail = "존재하지 않는 편의시설입니다"
+
+    class RequireCategory(APIException):
+        error_code = 200003
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "카테고리를 입력해주세요"
+
+    class CategoryShouldRoom(APIException):
+        error_code = 200004
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "카테고리는 'Room' 이어야 합니다"
 
 
 class BookingExceptions:

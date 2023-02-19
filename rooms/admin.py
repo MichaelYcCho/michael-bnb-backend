@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Room, Amenity
-from .selectors.selector_v0_room import RoomSelector
+from .selectors.selector_v1_room import RoomSelector
 
 
 @admin.action(description="Set all prices to zero")
