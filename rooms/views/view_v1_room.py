@@ -1,4 +1,3 @@
-from django.conf import settings
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -8,19 +7,14 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.response import Response
-from rest_framework.exceptions import (
-    NotFound,
-    ParseError,
-    PermissionDenied,
-)
-from rooms.models import Amenity, Room
-from categories.models import Category
 from rooms import serializers
-from reviews.serializers import ReviewSerializer
-from medias.serializers import PhotoSerializer
-from rooms.selectors.selector_v0_room import RoomSelector
-from rooms.serializers import RoomListOutputSerializer, RoomDetailOutputSerializer
-from rooms.services.service_v1_room import RoomCreateService
+from rooms.selectors.selector_v1_room import RoomSelector
+from rooms.serializers import (
+    RoomListOutputSerializer,
+    RoomDetailOutputSerializer,
+    RoomUpdateInputSerializer,
+)
+from rooms.services.service_v1_room import RoomService, RoomDeleteService
 
 
 class RoomsListAPI(APIView):
@@ -59,7 +53,7 @@ class RoomCreateAPI(APIView):
     def post(self, request):
         input_serializer = serializers.RoomCreateInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
-        service = RoomCreateService(request, input_serializer.validated_data)
+        service = RoomService(request, input_serializer.validated_data)
         room = service.create_room()
         output_serializer = serializers.RoomCreateOutputSerializer({"id": room.id})
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
@@ -86,7 +80,6 @@ class RoomDetailAPI(APIView):
 class RoomUpdateAPI(APIView):
 
     # TODO: Owner Permission
-
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
@@ -97,41 +90,22 @@ class RoomUpdateAPI(APIView):
         },
     )
     def put(self, request: Request, room_id: int):
+        input_serializer = RoomUpdateInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+
         selector = RoomSelector()
         room = selector.get_room(room_id)
+        service = RoomService(request, input_serializer.validated_data)
+        service.update_room(room)
 
-        if not room.owner == request.user:
-            raise PermissionDenied
-        serializer = serializers.RoomDetailSerializer(
-            room,
-            data=request.data,
-            partial=True,
-        )
-        if serializer.is_valid():
-            category_pk = request.data.get("category")
-            if category_pk:
-                try:
-                    category = Category.objects.get(pk=category_pk)
-                    if category.kind == Category.CategoryKindChoices.EXPERIENCES:
-                        raise ParseError("The Category kind should be 'rooms'")
-                except Category.DoesNotExist:
-                    raise ParseError("Category not found")
-            amenities = request.data.get("amenities")
-            if amenities:
-                for amenity_pk in amenities:
-                    try:
-                        amenity = Amenity.objects.get(pk=amenity_pk)
-                    except Amenity.DoesNotExist:
-                        raise ParseError(f"Amenity with id {amenity_pk} not found")
-                room.amenities.set(amenities)
-            updated_room = serializer.save()
-            serializer = serializers.RoomDetailSerializer(
-                updated_room,
-                context={"request": request},
-            )
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+        output_serializer = RoomDetailOutputSerializer(room)
+        return Response(output_serializer.data, status=status.HTTP_200_OK)
+
+
+class RoomDeleteAPI(APIView):
+
+    # TODO: Owner Permission
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_summary="V1 Room Delete API",
@@ -140,9 +114,11 @@ class RoomUpdateAPI(APIView):
             status.HTTP_204_NO_CONTENT: openapi.Response("삭제 완료"),
         },
     )
-    def delete(self, request, pk):
-        room = self.get_object(pk)
-        if room.owner != request.user:
-            raise PermissionDenied
-        room.delete()
+    def delete(self, request: Request, room_id: int):
+        selector = RoomSelector(request)
+        room = selector.get_room(room_id)
+
+        service = RoomDeleteService(request, room)
+        service.delete_room()
+
         return Response(status=HTTP_204_NO_CONTENT)

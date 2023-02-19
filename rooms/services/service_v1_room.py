@@ -58,7 +58,6 @@ class RoomService:
         return room
 
     def update_room(self, room: Room) -> Room:
-
         if not room.owner == self.request.user:
             raise RoomExceptions.UserIsNotOwner
 
@@ -88,3 +87,19 @@ class RoomService:
                 room.amenities.add(amenity)
 
         return room
+
+
+class RoomDeleteService:
+    def __init__(self, request: Request, room: Room) -> None:
+        self.request = request
+        self.room = room
+
+    def delete_room(self) -> None:
+        room = Room.objects.filter(pk=self.room.id).first()
+        if room is None:
+            raise RoomExceptions.NotFoundRoom
+
+        if not room.owner == self.request.user:
+            raise RoomExceptions.UserIsNotOwner
+
+        room.delete()

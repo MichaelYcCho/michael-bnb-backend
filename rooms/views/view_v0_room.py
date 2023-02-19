@@ -17,7 +17,7 @@ from categories.models import Category
 from rooms import serializers
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
-from rooms.selectors.selector_v0_room import RoomSelector
+from rooms.selectors.selector_v1_room import RoomSelector
 
 
 class RoomReviews(APIView):
