@@ -7,7 +7,8 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 permission = (
-    settings.APP_ENV in ("DEV",) and permissions.AllowAny or permissions.IsAuthenticated
+    settings.APP_ENV in ("DEV",)
+    and permissions.AllowAny  # or permissions.IsAuthenticated
 )
 
 schema_view = get_schema_view(
