@@ -13,64 +13,14 @@ from rest_framework.exceptions import (
     ParseError,
     PermissionDenied,
 )
-from .models import Amenity, Room
+from rooms.models import Amenity, Room
 from categories.models import Category
-from . import serializers
+from rooms import serializers
 from reviews.serializers import ReviewSerializer
 from medias.serializers import PhotoSerializer
-from .selectors.selector_v0_room import RoomSelector
-from .serializers import RoomListOutputSerializer
-from .services.service_v1_room import RoomCreateService
-
-
-class Amenities(APIView):
-    def get(self, request):
-        all_amenities = Amenity.objects.all()
-        serializer = serializers.AmenitySerializer(all_amenities, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = serializers.AmenitySerializer(data=request.data)
-        if serializer.is_valid():
-            amenity = serializer.save()
-            return Response(
-                serializers.AmenitySerializer(amenity).data,
-            )
-        else:
-            return Response(serializer.errors)
-
-
-class AmenityDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return Amenity.objects.get(pk=pk)
-        except Amenity.DoesNotExist:
-            raise NotFound
-
-    def get(self, request, pk):
-        amenity = self.get_object(pk)
-        serializer = serializers.AmenitySerializer(amenity)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        amenity = self.get_object(pk)
-        serializer = serializers.AmenitySerializer(
-            amenity,
-            data=request.data,
-            partial=True,
-        )
-        if serializer.is_valid():
-            updated_amenity = serializer.save()
-            return Response(
-                serializers.AmenitySerializer(updated_amenity).data,
-            )
-        else:
-            return Response(serializer.errors)
-
-    def delete(self, request, pk):
-        amenity = self.get_object(pk)
-        amenity.delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+from rooms.selectors.selector_v0_room import RoomSelector
+from rooms.serializers import RoomListOutputSerializer
+from rooms.services.service_v1_room import RoomCreateService
 
 
 class RoomsListAPI(APIView):
