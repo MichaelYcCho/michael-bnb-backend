@@ -1,7 +1,6 @@
 from datetime import date, datetime
 
 from django.utils import timezone
-from rest_framework import serializers
 
 from bookings.models import Booking
 from rooms.models import Room
