@@ -67,7 +67,7 @@
   - [] Room
   - [] User
   - [] Review
-  - [] Category
+  - [x] Category
   - [] Media
   - [] Uploads
   - [] WishList
