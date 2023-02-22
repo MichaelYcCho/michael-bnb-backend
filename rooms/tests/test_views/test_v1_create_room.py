@@ -66,7 +66,7 @@ class CreateRoomTestCase(APITestCase):
         res = self.client.post(self.url, data, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.json().get("category")[0], "이 필드는 필수 항목입니다.")
+        self.assertEqual(res.json().get("error_code"), 999999)
 
     def test_fail_amenity_is_none(self) -> None:
         """Amenity가 없으면 에러 발생"""
@@ -91,4 +91,4 @@ class CreateRoomTestCase(APITestCase):
         res = self.client.post(self.url, data, format="json")
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.json().get("amenities")[0], "이 필드는 필수 항목입니다.")
+        self.assertEqual(res.json().get("error_code"), 999999)
