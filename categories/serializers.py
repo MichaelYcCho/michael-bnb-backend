@@ -10,3 +10,9 @@ class CategorySerializer(serializers.ModelSerializer):
             "name",
             "kind",
         )
+
+
+class CategoryListOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    kind = serializers.CharField()

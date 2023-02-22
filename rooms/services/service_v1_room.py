@@ -4,6 +4,7 @@ from rest_framework.request import Request
 
 from categories.models import Category
 from rooms.models import Amenity, Room
+from utils.choices import CategoryKindChoices
 from utils.exceptions.exception import RoomExceptions
 
 
@@ -28,7 +29,7 @@ class RoomService:
 
         try:
             category = Category.objects.get(pk=self.category_id)
-            if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+            if category.kind == CategoryKindChoices.EXPERIENCES:
                 raise ParseError("The category kind should be 'rooms'")
         except Category.DoesNotExist:
             raise ParseError("Category not found")
