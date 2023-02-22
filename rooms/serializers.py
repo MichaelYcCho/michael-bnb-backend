@@ -139,7 +139,7 @@ class AmenityListInputSerializer(serializers.Serializer):
         ref_name = "amenity_list_input"
 
 
-class AmenityListSerializer(serializers.ModelSerializer):
+class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
         fields = (

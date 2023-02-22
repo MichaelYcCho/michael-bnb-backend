@@ -65,7 +65,7 @@ class RoomService:
         category = Category.objects.filter(pk=self.category_id).first()
         if category is None:
             raise RoomExceptions.RequireCategory
-        if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+        if category.kind == CategoryKindChoices.EXPERIENCES:
             raise RoomExceptions.CategoryShouldRoom
 
         with transaction.atomic():
