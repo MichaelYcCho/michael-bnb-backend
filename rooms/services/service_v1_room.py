@@ -16,6 +16,7 @@ class RoomService:
         self.city = data.get("city")
         self.price = data.get("price")
         self.rooms = data.get("rooms")
+        self.kind = data.get("kind")
         self.toilets = data.get("toilets")
         self.description = data.get("description")
         self.pet_friendly = data.get("pet_friendly")
@@ -75,6 +76,7 @@ class RoomService:
             room.price = self.price
             room.rooms = self.rooms
             room.toilets = self.toilets
+            room.kind = self.kind
             room.description = self.description
             room.pet_friendly = self.pet_friendly
             room.category = Category.objects.get(pk=self.category_id)
