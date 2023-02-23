@@ -15,6 +15,7 @@ class RoomService:
         self.country = data.get("country")
         self.city = data.get("city")
         self.price = data.get("price")
+        self.address = data.get("address")
         self.rooms = data.get("rooms")
         self.kind = data.get("kind")
         self.toilets = data.get("toilets")
@@ -44,6 +45,8 @@ class RoomService:
                 city=self.city,
                 price=self.price,
                 rooms=self.rooms,
+                kind=self.kind,
+                address=self.address,
                 toilets=self.toilets,
                 description=self.description,
                 pet_friendly=self.pet_friendly,
@@ -77,6 +80,7 @@ class RoomService:
             room.rooms = self.rooms
             room.toilets = self.toilets
             room.kind = self.kind
+            room.address = self.address
             room.description = self.description
             room.pet_friendly = self.pet_friendly
             room.category = Category.objects.get(pk=self.category_id)

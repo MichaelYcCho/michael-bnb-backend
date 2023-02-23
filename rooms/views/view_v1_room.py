@@ -91,7 +91,6 @@ class RoomUpdateAPI(APIView):
     )
     def put(self, request: Request, room_id: int):
         input_serializer = RoomUpdateInputSerializer(data=request.data)
-        print("흠", request.data)
         input_serializer.is_valid(raise_exception=True)
 
         selector = RoomSelector()
