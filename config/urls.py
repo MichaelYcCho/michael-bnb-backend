@@ -22,7 +22,7 @@ schema_view = get_schema_view(
     ),
     validators=["flex", "ssv"],
     public=True,
-    permission_classes=[permission],
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [

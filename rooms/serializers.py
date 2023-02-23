@@ -13,6 +13,8 @@ class RoomCreateInputSerializer(serializers.Serializer):
     name = serializers.CharField(label="방 이름")
     country = serializers.CharField(label="국가")
     city = serializers.CharField(label="도시")
+    address = serializers.CharField(label="주소")
+    kind = serializers.CharField(label="방 종류")
     price = serializers.IntegerField(label="가격", default=0)
     rooms = serializers.IntegerField(label="방 개수", default=1)
     toilets = serializers.IntegerField(label="화장실 개수", default=1)
