@@ -1,14 +1,11 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
+from utils.choices import CategoryKindChoices
+
 
 class Category(TimeStampedModel):
-
     """Room or Experience Category"""
-
-    class CategoryKindChoices(models.TextChoices):
-        ROOMS = "rooms", "Rooms"
-        EXPERIENCES = "experiences", "Experiences"
 
     name = models.CharField(max_length=50)
     kind = models.CharField(

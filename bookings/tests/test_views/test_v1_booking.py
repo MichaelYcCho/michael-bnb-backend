@@ -141,6 +141,7 @@ class BookingCheckTestCase(APITestCase):
         self.assertEqual(res.json()["error_code"], 300005)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @freeze_time("2023-02-19", tz_offset=9)
     def test_success_create_booking(self) -> None:
         """예약 생성 성공"""
         url = "/api/bookings/v1/create"
@@ -155,6 +156,7 @@ class BookingCheckTestCase(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+    @freeze_time("2023-02-19", tz_offset=9)
     def test_failed_create_already_booking(self) -> None:
         """예약 생성 실패 -> 이미 예약된 방"""
         mommy.make(

@@ -130,6 +130,15 @@ class RoomUpdateInputSerializer(serializers.Serializer):
         ref_name = "room_create_input"
 
 
+class AmenityListInputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+
+    class Meta:
+        ref_name = "amenity_list_input"
+
+
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity

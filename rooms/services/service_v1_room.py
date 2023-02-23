@@ -4,6 +4,7 @@ from rest_framework.request import Request
 
 from categories.models import Category
 from rooms.models import Amenity, Room
+from utils.choices import CategoryKindChoices
 from utils.exceptions.exception import RoomExceptions
 
 
@@ -15,6 +16,7 @@ class RoomService:
         self.city = data.get("city")
         self.price = data.get("price")
         self.rooms = data.get("rooms")
+        self.kind = data.get("kind")
         self.toilets = data.get("toilets")
         self.description = data.get("description")
         self.pet_friendly = data.get("pet_friendly")
@@ -28,7 +30,7 @@ class RoomService:
 
         try:
             category = Category.objects.get(pk=self.category_id)
-            if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+            if category.kind == CategoryKindChoices.EXPERIENCES:
                 raise ParseError("The category kind should be 'rooms'")
         except Category.DoesNotExist:
             raise ParseError("Category not found")
@@ -64,7 +66,7 @@ class RoomService:
         category = Category.objects.filter(pk=self.category_id).first()
         if category is None:
             raise RoomExceptions.RequireCategory
-        if category.kind == Category.CategoryKindChoices.EXPERIENCES:
+        if category.kind == CategoryKindChoices.EXPERIENCES:
             raise RoomExceptions.CategoryShouldRoom
 
         with transaction.atomic():
@@ -74,6 +76,7 @@ class RoomService:
             room.price = self.price
             room.rooms = self.rooms
             room.toilets = self.toilets
+            room.kind = self.kind
             room.description = self.description
             room.pet_friendly = self.pet_friendly
             room.category = Category.objects.get(pk=self.category_id)
