@@ -25,7 +25,7 @@ class Review(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="reviews",
     )
-    payload = models.TextField()
+    content = models.TextField()
     rating = models.PositiveIntegerField()
 
     def __str__(self) -> str:
