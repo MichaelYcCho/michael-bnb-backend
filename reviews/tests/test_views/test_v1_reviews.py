@@ -46,7 +46,7 @@ class ReviewListTestCase(APITestCase):
         url = "/api/reviews/v1/list/1"
         res = self.client.get(url)
 
-        self.assertEqual(len(res.json()), 4)
+        self.assertEqual(len(res.json()), 3)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         url = "/api/reviews/v1/list/2"

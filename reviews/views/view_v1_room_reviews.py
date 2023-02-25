@@ -27,5 +27,7 @@ class GetRoomReviewAPI(APIView):
     def get(self, request: Request, room_id: int) -> Response:
         room = RoomSelector(request).get_room(room_id)
         review = room.reviews.all()
-        serializer = ReviewListOutputSerializer(review, many=True)
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(review, request, view=self)
+        serializer = ReviewListOutputSerializer(page, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
