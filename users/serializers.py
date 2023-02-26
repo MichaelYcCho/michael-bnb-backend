@@ -46,6 +46,11 @@ class PrivateUserSerializer(ModelSerializer):
         )
 
 
+class UserSignInInputSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+
 class UserOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     avatar = serializers.URLField()

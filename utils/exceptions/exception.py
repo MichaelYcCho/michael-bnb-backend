@@ -19,6 +19,16 @@ class UserExceptions:
         status_code = status.HTTP_400_BAD_REQUEST
         default_detail = "비밀번호가 일치하지 않습니다"
 
+    class UserInfoDoesNotExist(APIException):
+        error_code = 100003
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "유저 ID 또는 비밀번호가 존재하지 않습니다"
+
+    class UserSignInFailed(APIException):
+        error_code = 100004
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "로그인에 실패했습니다"
+
 
 class RoomExceptions:
     class NotFoundRoom(APIException):
