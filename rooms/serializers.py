@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from utils.serializers import inline_serializer
-from rooms.models import Amenity, Room
 from medias.serializers import PhotoSerializer
+from rooms.models.room import Room
+from utils.serializers import inline_serializer
 
 
 class RoomCreateInputSerializer(serializers.Serializer):
@@ -132,27 +132,16 @@ class RoomUpdateInputSerializer(serializers.Serializer):
         ref_name = "room_create_input"
 
 
-class AmenityListInputSerializer(serializers.Serializer):
+class AmenityListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     description = serializers.CharField()
 
     class Meta:
-        ref_name = "amenity_list_input"
-
-
-class AmenitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Amenity
-        fields = (
-            "pk",
-            "name",
-            "description",
-        )
+        ref_name = "amenity_list"
 
 
 class RoomListSerializer(serializers.ModelSerializer):
-
     rating = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     photos = PhotoSerializer(many=True, read_only=True)

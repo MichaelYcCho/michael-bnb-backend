@@ -20,7 +20,8 @@ from bookings.services.service_v1_booking import (
     BookingCreateService,
     BookingCancelService,
 )
-from rooms.models import Room
+from rooms.models.room import Room
+
 from rooms.selectors.selector_v1_room import RoomSelector
 from utils.exceptions.exception import BookingExceptions
 

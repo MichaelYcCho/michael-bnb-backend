@@ -1,15 +1,16 @@
-from rest_framework.views import APIView
-from rest_framework.status import HTTP_200_OK
 from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rooms.models import Room
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
+
+from rooms.models.room import Room
+
 from .models import Wishlist
 from .serializers import WishlistSerializer
 
 
 class Wishlists(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -29,12 +30,10 @@ class Wishlists(APIView):
             )
             serializer = WishlistSerializer(wishlist)
             return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+        return Response(serializer.errors)
 
 
 class WishlistDetail(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def get_object(self, pk, user):
@@ -70,8 +69,8 @@ class WishlistDetail(APIView):
                 context={"request": request},
             )
             return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+
+        return Response(serializer.errors)
 
 
 class WishlistToggle(APIView):

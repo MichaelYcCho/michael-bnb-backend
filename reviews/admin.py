@@ -1,9 +1,9 @@
 from django.contrib import admin
+
 from .models import Review
 
 
 class WordFilter(admin.SimpleListFilter):
-
     title = "Filter by words!"
 
     parameter_name = "word"
@@ -18,17 +18,16 @@ class WordFilter(admin.SimpleListFilter):
     def queryset(self, request, reviews):
         word = self.value()
         if word:
-            return reviews.filter(payload__contains=word)
+            return reviews.filter(content__contains=word)
         else:
             reviews
 
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-
     list_display = (
         "__str__",
-        "payload",
+        "content",
     )
     list_filter = (
         WordFilter,

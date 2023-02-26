@@ -66,7 +66,7 @@
   - [x] Booking
   - [] Room
   - [] User
-  - [] Review
+  - [x] Review
   - [x] Category
   - [] Media
   - [] Uploads

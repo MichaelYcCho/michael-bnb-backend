@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Room, Amenity
+
+from .models.room import Room, Amenity
 from .selectors.selector_v1_room import RoomSelector
 
 

@@ -1,8 +1,8 @@
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from model_mommy import mommy
-from utils.choices import CategoryKindChoices
+from utils.choices.choice import CategoryKindChoices
 
 
 class CategoryListTestCase(APITestCase):

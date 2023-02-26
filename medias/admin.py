@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Photo, Video
+
+from medias.models.photo import Photo, Video
 
 
 @admin.register(Photo)

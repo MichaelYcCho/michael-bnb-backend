@@ -1,7 +1,8 @@
 from rest_framework.request import Request
 
 from bookings.models import Booking
-from rooms.models import Room
+from rooms.models.room import Room
+
 from users.models import User
 from utils.exceptions.exception import BookingExceptions
 

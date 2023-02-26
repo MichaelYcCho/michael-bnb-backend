@@ -1,11 +1,11 @@
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
 
-from rooms.models import Room
+from rooms.models.room import Room
 
 
 class RoomSelector:
-    def __init__(self, request: Request = None):
+    def __init__(self, request: Request = None) -> None:  # type: ignore
         self.request = request
 
     @staticmethod
@@ -38,7 +38,7 @@ class RoomSelector:
         if self.request.user.is_anonymous:
             return False
 
-        wish_list = self.request.user.wishlists.all()
+        wish_list = self.request.user.wishlists.all()  # type: ignore
 
         if room is None:
             raise NotFound

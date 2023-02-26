@@ -1,5 +1,7 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import Photo
+
+from medias.models.photo import Photo
 
 
 class PhotoSerializer(ModelSerializer):
@@ -10,3 +12,9 @@ class PhotoSerializer(ModelSerializer):
             "file",
             "description",
         )
+
+
+class PhotoCreateSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    file = serializers.URLField()
+    description = serializers.CharField()

@@ -9,3 +9,9 @@ class BookingKindChoices(models.TextChoices):
 class CategoryKindChoices(models.TextChoices):
     ROOMS = "rooms", "Rooms"
     EXPERIENCES = "experiences", "Experiences"
+
+
+class RoomKindChoices(models.TextChoices):
+    ENTIRE_PLACE = ("entire_place", "Entire Place")
+    PRIVATE_ROOM = ("private_room", "Private Room")
+    SHARED_ROOM = "shared_room", "Shared Room"

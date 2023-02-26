@@ -1,16 +1,16 @@
 from rest_framework import serializers
-from users.serializers import TinyUserSerializer
-from .models import Review
+
+from utils.serializers import inline_serializer
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-
-    user = TinyUserSerializer(read_only=True)
-
-    class Meta:
-        model = Review
-        fields = (
-            "user",
-            "payload",
-            "rating",
-        )
+class ReviewListOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    user = inline_serializer(
+        fields={
+            "id": serializers.IntegerField(),
+            "avatar": serializers.URLField(),
+            "username": serializers.CharField(),
+        }
+    )
+    content = serializers.CharField(label="리뷰 내용")
+    rating = serializers.IntegerField(label="평점")
