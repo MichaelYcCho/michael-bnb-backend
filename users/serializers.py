@@ -51,6 +51,10 @@ class UserSignInInputSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+class UserSocialLoginInputSerializer(serializers.Serializer):
+    code = serializers.CharField()
+
+
 class UserOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     avatar = serializers.URLField()
