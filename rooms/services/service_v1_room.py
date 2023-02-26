@@ -2,8 +2,8 @@ from django.db import transaction
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 
-from categories.models import Category
-from rooms.models import Amenity, Room
+from categories.models.category import Category
+from rooms.models.room import Amenity, Room
 from utils.choices import CategoryKindChoices
 from utils.exceptions.exception import RoomExceptions
 
@@ -38,7 +38,6 @@ class RoomService:
 
         with transaction.atomic():
             owner = self.request.user
-
             room = Room.objects.create(
                 name=self.room_name,
                 country=self.country,
@@ -54,7 +53,7 @@ class RoomService:
                 owner=owner,
             )
 
-            for amenity_id in self.amenities_list:
+            for amenity_id in self.amenities_list:  # type: ignore
                 amenity = Amenity.objects.filter(pk=amenity_id).first()
                 if amenity is None:
                     raise RoomExceptions.NotFoundAmenity
@@ -87,7 +86,7 @@ class RoomService:
             room.save()
 
             room.amenities.clear()
-            for amenity_id in self.amenities_list:
+            for amenity_id in self.amenities_list:  # type: ignore
                 amenity = Amenity.objects.filter(pk=amenity_id).first()
                 if amenity is None:
                     raise RoomExceptions.NotFoundAmenity

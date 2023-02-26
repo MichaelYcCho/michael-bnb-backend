@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from utils.serializers import inline_serializer
-from rooms.models import Amenity, Room
 from medias.serializers import PhotoSerializer
+from rooms.models.room import Room
+from utils.serializers import inline_serializer
 
 
 class RoomCreateInputSerializer(serializers.Serializer):
@@ -142,7 +142,6 @@ class AmenityListSerializer(serializers.Serializer):
 
 
 class RoomListSerializer(serializers.ModelSerializer):
-
     rating = serializers.SerializerMethodField()
     is_owner = serializers.SerializerMethodField()
     photos = PhotoSerializer(many=True, read_only=True)
