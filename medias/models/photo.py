@@ -3,7 +3,6 @@ from model_utils.models import TimeStampedModel
 
 
 class Photo(TimeStampedModel):
-
     file = models.URLField()
     description = models.CharField(
         max_length=140,
@@ -28,7 +27,6 @@ class Photo(TimeStampedModel):
 
 
 class Video(TimeStampedModel):
-
     file = models.URLField()
     experience = models.OneToOneField(
         "experiences.Experience",
