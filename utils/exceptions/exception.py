@@ -29,6 +29,11 @@ class UserExceptions:
         status_code = status.HTTP_400_BAD_REQUEST
         default_detail = "로그인에 실패했습니다"
 
+    class SocialLoginFailed(APIException):
+        error_code = 100005
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "소셜 로그인에 실패했습니다"
+
 
 class RoomExceptions:
     class NotFoundRoom(APIException):

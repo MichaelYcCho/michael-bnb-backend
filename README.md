@@ -64,7 +64,7 @@
 - API
   - [x] Booking
   - [x] Room
-  - [] User
+  - [x] User
   - [x] Review
   - [x] Category
   - [] Media

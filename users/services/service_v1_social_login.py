@@ -1,17 +1,20 @@
 import requests
 from django.conf import settings
 from django.contrib.auth import login
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework.request import Request
 
 from users.models import User
+from utils.exceptions.exception import UserExceptions
 
 
-class GithubLogIn(APIView):
-    def post(self, request):
+class SocialLoginService:
+    def __init__(self, request: Request, data: dict) -> None:
+        self.request = request
+        self.code = data.get("code")
+
+    def github_login(self) -> bool:
         try:
-            code = request.data.get("code")
+            code = self.code
             access_token = requests.post(
                 f"https://github.com/login/oauth/access_token"
                 f"?code={code}&client_id={settings.GH_ID}"
@@ -36,30 +39,29 @@ class GithubLogIn(APIView):
             )
             user_emails = user_emails.json()
             try:
-                user = User.objects.get(email=user_emails[0]["email"])
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
+                user = User.objects.get(email=user_emails[0]["email"])  # type: ignore
+                login(self.request, user)
+                return True
+
             except User.DoesNotExist:
                 user = User.objects.create(
-                    username=user_data.get("login"),
-                    email=user_emails[0]["email"],
-                    name=user_data.get("name"),
-                    avatar=user_data.get("avatar_url"),
+                    username=user_data.get("login"),  # type: ignore
+                    email=user_emails[0]["email"],  # type: ignore
+                    name=user_data.get("name"),  # type: ignore
+                    avatar=user_data.get("avatar_url"),  # type: ignore
                     # sns_id = user_data.get("id"), # sns_id 필드로 고유값 저장할것
                 )
                 user.set_unusable_password()
                 # has_usable_password()가 False를 리턴하면 로그인 불가능하는 로직도 가능
                 user.save()
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
+                login(self.request, user)
+                return True
         except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise UserExceptions.SocialLoginFailed
 
-
-class KakaoLogIn(APIView):
-    def post(self, request):
+    def kako_login(self) -> bool:
         try:
-            code = request.data.get("code")
+            code = self.request.data.get("code")
             access_token = requests.post(
                 "https://kauth.kakao.com/oauth/token",
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -81,12 +83,12 @@ class KakaoLogIn(APIView):
                 },
             )
             user_data = user_data.json()
-            kakao_account = user_data.get("kakao_account")
+            kakao_account = user_data.get("kakao_account")  # type: ignore
             profile = kakao_account.get("profile")
             try:
                 user = User.objects.get(email=kakao_account.get("email"))
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
+                login(self.request, user)
+                return True
             except User.DoesNotExist:
                 user = User.objects.create(
                     email=kakao_account.get("email"),
@@ -97,7 +99,7 @@ class KakaoLogIn(APIView):
                 )
                 user.set_unusable_password()
                 user.save()
-                login(request, user)
-                return Response(status=status.HTTP_200_OK)
+                login(self.request, user)
+                return True
         except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise UserExceptions.SocialLoginFailed
