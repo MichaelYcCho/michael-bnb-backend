@@ -1,10 +1,11 @@
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class SignUpTestCase(APITestCase):
+class UserTestCase(APITestCase):
     """
-    유저 회원가입 테스트케이스
+    유저 테스트케이스
     """
 
     def setUp(self) -> None:
@@ -38,3 +39,12 @@ class SignUpTestCase(APITestCase):
         res = self.client.post(self.url, data, format="json")
         self.assertEqual(res.json().get("error_code"), 100002)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_success_user_get_self_profile(self) -> None:
+        """유저 자기 프로필 조회  ->  성공"""
+        url = "/api/users/v1/me"
+        user = mommy.make("users.User", name="michael", username="michael@gmail.com")
+        self.client.force_authenticate(user)
+
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
