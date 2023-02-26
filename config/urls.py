@@ -33,7 +33,7 @@ urlpatterns = [
     path("api/experiences/v0/", include("experiences.urls")),
     path("api/medias/v0/", include("medias.urls")),
     path("api/wishlists/v0/", include("wishlists.urls")),
-    path("api/users/v0/", include("users.urls")),
+    path("api/users/", include("users.urls")),
     path("api/bookings/", include("bookings.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

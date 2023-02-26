@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from .models import User
+
+from users.models import User
 
 
 class SignUpInputSerializer(serializers.Serializer):
@@ -43,3 +44,17 @@ class PrivateUserSerializer(ModelSerializer):
             "groups",
             "user_permissions",
         )
+
+
+class UserOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    avatar = serializers.URLField()
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    name = serializers.CharField()
+    phone = serializers.CharField()
+    is_host = serializers.BooleanField()
+    gender = serializers.CharField()
+    language = serializers.CharField()
+    currency = serializers.CharField()
