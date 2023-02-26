@@ -1,7 +1,6 @@
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from model_mommy import mommy
 
 from rooms.models.room import Room
 
@@ -26,7 +25,7 @@ class CreateRoomTestCase(APITestCase):
             "name": "Michael",
             "country": "Korea",
             "city": "Seoul",
-            "address": "sercret",
+            "address": "srecret",
             "price": "2",
             "rooms": "3",
             "toilets": "1",
@@ -92,3 +91,46 @@ class CreateRoomTestCase(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.json().get("error_code"), 999999)
+
+
+class UpdateRoomTestCase(APITestCase):
+    """
+    Room Update 테스트케이스
+    """
+
+    def setUp(self) -> None:
+        self.user = mommy.make("users.User")
+        self.category = mommy.make("Category", kind="rooms")
+        self.amenity = mommy.make("Amenity", name="TV")
+        self.room = mommy.make("Room", owner=self.user, category=self.category)
+        self.room.amenities.add(self.amenity)
+
+    def test_success_update_room(self) -> None:
+        """Room Update 성공"""
+
+        self.client.force_authenticate(self.user)
+        self.url = f"/api/rooms/v1/update/{self.room.id}"
+        category_japan = mommy.make("Category", kind="rooms", name="japan")
+
+        data = {
+            "room_id": f"{self.room.id}",
+            "name": "Michael",
+            "country": "Korea",
+            "city": "Seoul",
+            "address": "secret",
+            "price": "1",
+            "rooms": "1",
+            "toilets": "3",
+            "description": "4",
+            "pet_friendly": True,
+            "kind": "entire_place",
+            "category": f"{category_japan.id}",
+            "amenities": [f"{self.amenity.id}"],
+        }
+
+        res = self.client.put(self.url, data, format="json")
+        json = res.json()
+
+        self.assertEqual(json.get("address"), "secret")
+        self.assertEqual(json.get("category").get("id"), category_japan.id)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

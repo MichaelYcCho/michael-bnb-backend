@@ -12,8 +12,8 @@
 버전별 특징 (V)
 
 ### V0
-    - 모델 디자인 
-    - 베이스 상태의 API만 구현한 상태 
+    - 모델 디자인
+    - 베이스 상태의 API만 구현한 상태
     - 폴더 트리의 분리가 세분화되어있지않으며, Model, Serializer, View 단별 로직이 분리되어있지 않음
     - Social Login
 ---
@@ -49,7 +49,6 @@
 - [x] Review
 - [x] Category
 - [x] Media
-- [x] Uploads
 - [x] WishList
 
 ### V1 Actions (InProgress)
@@ -59,17 +58,16 @@
   - [x] Custom Exception Handler
   - [x] Custom Serializer
   - [x] Apply Swagger
-  - [x] Apply Https Domain 
+  - [x] Apply Https Domain
   - [x] Guest, Host Mode Toggle(After Login)
 
 - API
   - [x] Booking
-  - [] Room
+  - [x] Room
   - [] User
   - [x] Review
   - [x] Category
   - [] Media
-  - [] Uploads
   - [] WishList
 
 
