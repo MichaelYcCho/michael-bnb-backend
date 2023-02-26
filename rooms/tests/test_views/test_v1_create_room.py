@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 
 from model_mommy import mommy
 
-from rooms.models import Room
+from rooms.models.room import Room
 
 
 class CreateRoomTestCase(APITestCase):

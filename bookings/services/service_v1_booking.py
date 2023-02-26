@@ -3,7 +3,8 @@ from datetime import date, datetime
 from django.utils import timezone
 
 from bookings.models import Booking
-from rooms.models import Room
+from rooms.models.room import Room
+
 from users.models import User
 from utils.choices import BookingKindChoices
 from utils.exceptions.exception import BookingExceptions

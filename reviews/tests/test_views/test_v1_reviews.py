@@ -41,15 +41,15 @@ class ReviewListTestCase(APITestCase):
         )
 
     def test_success_get_review_room1(self) -> None:
-        """내 예약내역 조회 -> 조회결과 없을때"""
+        """리뷰내역 조회"""
 
-        url = "/api/reviews/v1/list/1"
+        url = f"/api/reviews/v1/list/{self.room1.id}"
         res = self.client.get(url)
 
         self.assertEqual(len(res.json()), 3)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        url = "/api/reviews/v1/list/2"
+        url = f"/api/reviews/v1/list/{self.room2.id}"
         res = self.client.get(url)
 
         self.assertEqual(len(res.json()), 1)
