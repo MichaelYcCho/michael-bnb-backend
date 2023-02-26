@@ -48,3 +48,14 @@ class UserTestCase(APITestCase):
 
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_success_user_change_mode(self) -> None:
+        """호스트 - 게스트 모드 변경"""
+        url = "/api/users/v1/change-mode"
+        user = mommy.make("users.User", name="HostMan", username="Host", is_host=True)
+        self.client.force_authenticate(user)
+
+        res = self.client.patch(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(user.is_host, False)
