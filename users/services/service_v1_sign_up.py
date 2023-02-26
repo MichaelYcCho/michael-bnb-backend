@@ -1,6 +1,5 @@
-from rest_framework.status import HTTP_400_BAD_REQUEST
-
 from users.models import User
+from utils.exceptions.exception import UserExceptions
 
 
 class SignUpService:
@@ -13,9 +12,8 @@ class SignUpService:
         self.phone = validated_data["phone"]
 
     def validate_password(self) -> None:
-
         if self.password != self.password_confirm:
-            raise HTTP_400_BAD_REQUEST("비밀번호가 일치하지 않습니다.")
+            raise UserExceptions.PasswordNotMatch
 
     def create_user(self) -> User:
         user = User.objects.create(

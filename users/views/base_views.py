@@ -1,27 +1,20 @@
 import jwt
-
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, serializers
-from rest_framework.exceptions import ParseError, NotFound
-from rest_framework.permissions import IsAuthenticated
 
 from users.models import User
 from users.serializers import PrivateUserSerializer
-from users.services.service_v0_user import UserService
+from users.services.service_v1_user import UserService
 
 
 class Me(APIView):
-
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        serializer = PrivateUserSerializer(user)
-        return Response(serializer.data)
 
     def put(self, request):
         user = request.user
@@ -34,8 +27,7 @@ class Me(APIView):
             user = serializer.save()
             serializer = PrivateUserSerializer(user)
             return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+        return Response(serializer.errors)
 
 
 class PublicUser(APIView):
@@ -49,7 +41,6 @@ class PublicUser(APIView):
 
 
 class ChangePassword(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
@@ -62,8 +53,7 @@ class ChangePassword(APIView):
             user.set_password(new_password)
             user.save()
             return Response(status=status.HTTP_200_OK)
-        else:
-            raise ParseError
+        raise ParseError
 
 
 class LogIn(APIView):
@@ -80,14 +70,13 @@ class LogIn(APIView):
         if user:
             login(request, user)
             return Response({"ok": "Welcome!"})
-        else:
-            return Response(
-                {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
-            )
+
+        return Response(
+            {"error": "wrong password"}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 class LogOut(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -113,8 +102,7 @@ class JWTLogIn(APIView):
                 algorithm="HS256",
             )
             return Response({"token": token})
-        else:
-            return Response({"error": "wrong password"})
+        return Response({"error": "wrong password"})
 
 
 class ChangeModeAPI(APIView):

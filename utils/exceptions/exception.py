@@ -1,13 +1,23 @@
 from __future__ import annotations
 
-from typing import Any
-
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
 
 class BaseExceptions:
     pass
+
+
+class UserExceptions:
+    class NotFoundUser(APIException):
+        error_code = 100001
+        status_code = status.HTTP_404_NOT_FOUND
+        default_detail = "존재하지 않는 유저입니다"
+
+    class PasswordNotMatch(APIException):
+        error_code = 100002
+        status_code = status.HTTP_400_BAD_REQUEST
+        default_detail = "비밀번호가 일치하지 않습니다"
 
 
 class RoomExceptions:
