@@ -4,7 +4,7 @@ from rest_framework.request import Request
 
 from categories.models.category import Category
 from rooms.models.room import Amenity, Room
-from utils.choices import CategoryKindChoices
+from utils.choices.choice import CategoryKindChoices
 from utils.exceptions.exception import RoomExceptions
 
 

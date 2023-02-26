@@ -46,4 +46,4 @@ class RoomAmenitiesAPI(APIView):
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(amenities, request, view=self)
         output_serializer = AmenityListSerializer(page, many=True)
-        return Response(output_serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(output_serializer.data)

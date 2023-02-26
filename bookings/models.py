@@ -1,7 +1,7 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
-from utils.choices import BookingKindChoices
+from utils.choices.choice import BookingKindChoices
 
 
 class Booking(TimeStampedModel):

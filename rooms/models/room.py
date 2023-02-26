@@ -1,15 +1,12 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
+from utils.choices.choice import RoomKindChoices
+
 
 class Room(TimeStampedModel):
 
     """Room Model Definition"""
-
-    class RoomKindChoices(models.TextChoices):
-        ENTIRE_PLACE = ("entire_place", "Entire Place")
-        PRIVATE_ROOM = ("private_room", "Private Room")
-        SHARED_ROOM = "shared_room", "Shared Room"
 
     name = models.CharField(
         max_length=180,
@@ -60,6 +57,10 @@ class Room(TimeStampedModel):
     def total_amenities(self):
         return self.amenities.count()
 
+    class Meta:
+        verbose_name_plural = "Rooms"
+        ordering = ["-id"]
+
 
 class Amenity(TimeStampedModel):
 
@@ -79,3 +80,4 @@ class Amenity(TimeStampedModel):
 
     class Meta:
         verbose_name_plural = "Amenities"
+        ordering = ["name"]

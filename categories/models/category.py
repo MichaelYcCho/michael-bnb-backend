@@ -1,7 +1,7 @@
 from django.db import models
 from model_utils.models import TimeStampedModel
 
-from utils.choices import CategoryKindChoices
+from utils.choices.choice import CategoryKindChoices
 
 
 class Category(TimeStampedModel):

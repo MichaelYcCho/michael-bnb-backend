@@ -1,7 +1,7 @@
 from django.db.models import QuerySet
 
 from categories.models.category import Category
-from utils.choices import CategoryKindChoices
+from utils.choices.choice import CategoryKindChoices
 
 
 class CategorySelector:
