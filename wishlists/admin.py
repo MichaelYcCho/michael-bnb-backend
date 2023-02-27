@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Wishlist
+
+from wishlists.models.wish_list import Wishlist
 
 
 @admin.register(Wishlist)
