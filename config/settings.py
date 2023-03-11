@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 import dj_database_url
 import environ
@@ -217,10 +217,12 @@ else:
     CORS_ALLOWED_ORIGINS = [
         i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
     ]
+    # CSRF_TRUSTED_ORIGINS — Django에서 제공하는 CSRF를 CORS 구성을 통해 보안 요청에서 수행하는지 확인하기 위한 설정
     CSRF_TRUSTED_ORIGINS = [
         i for i in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if i
     ]
 
+# CORS_ALLOW_CREDENTIALS가 True인 경우, 쿠키가 cross-site HTTP 요청에 포함될 수 있다.
 CORS_ALLOW_CREDENTIALS = True
 
 # Sentry
