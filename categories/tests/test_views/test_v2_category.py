@@ -21,7 +21,7 @@ class CategoryListTestCase(APITestCase):
     def test_success_category_list(self) -> None:
         """Category Room List 성공"""
 
-        self.url = "/api/categories/v1/list"
+        self.url = "/api/categories/v2/list"
 
         res = self.client.get(self.url)
         json = res.json()
