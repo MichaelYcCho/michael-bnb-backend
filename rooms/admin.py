@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models.room import Room, Amenity
+from .models.room import Amenity, Room
 from .selectors.selector_v1_room import RoomSelector
 
 
@@ -13,10 +13,10 @@ def reset_prices(model_admin, request, rooms):
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-
     actions = (reset_prices,)
 
     list_display = (
+        "id",
         "name",
         "price",
         "kind",
@@ -51,7 +51,6 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
-
     list_display = (
         "name",
         "description",
