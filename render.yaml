@@ -10,7 +10,7 @@ services:
     name: airbnb_be
     env: python
     region: singapore
-    plan: free
+    plan: starter
     buildCommand: "./build.sh"
     startCommand: "gunicorn config.wsgi:application"
     envVars:
