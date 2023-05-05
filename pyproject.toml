@@ -25,6 +25,7 @@ swagger-spec-validator = "^3.0.3"
 model-mommy = "^2.0.0"
 freezegun = "^1.2.2"
 pre-commit = "^3.1.0"
+pydantic = "^1.10.6"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^22.6.0", allow-prereleases = true}
