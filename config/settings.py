@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-import dj_database_url
 import environ
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -110,31 +109,43 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+        "TEST": {
+            "NAME": BASE_DIR / "test_db.sqlite3",
+        },
+    }
+}
+# Rander사용시
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-if APP_ENV == "DEV":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DB_NAME"),
-            "USER": env("DB_USER"),
-            "HOST": env("DB_HOST"),
-            "PORT": 5432,
-        }
-    }
-elif APP_ENV == "TEST":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-else:
-    DATABASES = {
-        # render에서 환경변수값을 가져와 url 방식으로 connection
-        "default": dj_database_url.config(
-            conn_max_age=600,  # db연결 종료 전까지, 연결유지시간
-        )
-    }
+# if APP_ENV == "DEV":
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.postgresql",
+#             "NAME": env("DB_NAME"),
+#             "USER": env("DB_USER"),
+#             "HOST": env("DB_HOST"),
+#             "PORT": 5432,
+#         }
+#     }
+#
+# elif APP_ENV == "TEST":
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         # render에서 환경변수값을 가져와 url 방식으로 connection
+#         "default": dj_database_url.config(
+#             conn_max_age=600,  # db연결 종료 전까지, 연결유지시간
+#         )
+#     }
 
 
 # Password validation
