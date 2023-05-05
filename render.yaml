@@ -1,9 +1,9 @@
-databases:
-  - name: airbnb_db
-    databaseName: airbnb_db
-    user: airbnb
-    region: singapore
-    plan: free
+#databases:
+#  - name: airbnb_db
+#    databaseName: airbnb_db
+#    user: airbnb
+#    region: singapore
+#    plan: free
 
 services:
   - type: web
@@ -14,10 +14,10 @@ services:
     buildCommand: "./build.sh"
     startCommand: "gunicorn config.wsgi:application"
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: airbnb_db
-          property: connectionString
+#      - key: DATABASE_URL
+#        fromDatabase:
+#          name: airbnb_db
+#          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: WEB_CONCURRENCY
